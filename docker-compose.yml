@@ -1,0 +1,72 @@
+name: educoeur
+
+x-php: &php
+  build: ./docker/php
+  image: educoeur-php
+  volumes:
+    - ./:/var/www/html
+    # vendor/ dans un volume natif : le montage Windows est trop lent pour des milliers de fichiers
+    - vendor:/var/www/html/vendor
+  depends_on:
+    db:
+      condition: service_healthy
+  environment:
+    TZ: Africa/Algiers
+
+services:
+  app:
+    <<: *php
+    ports:
+      - "8010:8000"
+    command: php artisan serve --host=0.0.0.0 --port=8000
+
+  queue:
+    <<: *php
+    command: php artisan queue:work --tries=3 --sleep=3
+    restart: unless-stopped
+
+  scheduler:
+    <<: *php
+    command: php artisan schedule:work
+    restart: unless-stopped
+
+  vite:
+    image: node:24-alpine
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+      - node_modules:/var/www/html/node_modules
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_POLLING: "true"
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: educoeur
+      POSTGRES_USER: educoeur
+      POSTGRES_PASSWORD: secret
+      TZ: Africa/Algiers
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U educoeur -d educoeur"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  mailpit:
+    image: axllent/mailpit:latest
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+
+volumes:
+  pgdata:
+  vendor:
+  node_modules:

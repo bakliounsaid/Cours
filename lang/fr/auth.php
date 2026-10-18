@@ -1,0 +1,36 @@
+<?php
+
+return [
+    'failed' => 'Ces identifiants ne correspondent à aucun compte.',
+    'password' => 'Le mot de passe est incorrect.',
+    'throttle' => 'Trop de tentatives de connexion. Réessayez dans :seconds secondes.',
+
+    'inactive' => 'Ce compte enseignant est désactivé. Contactez la direction.',
+
+    'login_title' => 'Connexion',
+    'login_subtitle' => 'Espace réservé à l’équipe Éducœur.',
+    'teacher_login_title' => 'Espace enseignant',
+    'teacher_login_subtitle' => 'Connectez-vous pour voir vos séances et faire l’appel.',
+    'email' => 'Adresse e-mail',
+    'password_label' => 'Mot de passe',
+    'remember' => 'Rester connecté',
+    'submit' => 'Se connecter',
+    'forgot' => 'Mot de passe oublié ?',
+    'logout' => 'Se déconnecter',
+    'back_home' => 'Retour au site',
+    'forgot_title' => 'Mot de passe oublié',
+    'forgot_subtitle' => 'Indiquez votre adresse e-mail : nous vous enverrons un lien pour choisir un nouveau mot de passe.',
+    'send_link' => 'Envoyer le lien',
+    'reset_title' => 'Nouveau mot de passe',
+    'new_password' => 'Nouveau mot de passe',
+    'confirm_password' => 'Confirmer le mot de passe',
+    'reset_submit' => 'Enregistrer le mot de passe',
+    'back_to_login' => 'Retour à la connexion',
+    'reset_mail_subject' => 'Réinitialisation de votre mot de passe Éducœur',
+    'reset_mail_line' => 'Vous recevez cet e-mail car une réinitialisation du mot de passe a été demandée pour votre compte.',
+    'reset_mail_action' => 'Choisir un nouveau mot de passe',
+    'reset_mail_expire' => 'Ce lien expirera dans :count minutes.',
+    'reset_mail_ignore' => 'Si vous n’êtes pas à l’origine de cette demande, ignorez simplement cet e-mail.',
+    'greeting' => 'Bonjour :name,',
+    'signature' => 'L’équipe Éducœur',
+];

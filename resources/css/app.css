@@ -1,0 +1,220 @@
+@import 'tailwindcss' source(none);
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../views/**/*.blade.php';
+@source '../../app/**/*.php';
+@source '../js/**/*.js';
+
+
+/*
+ * Charte Éducœur — palette naturelle et chaleureuse (contrastes vérifiés WCAG AA)
+ * vert olive #2F5D50 (olive-700) : titres, boutons, en-têtes
+ * vert sauge #8DB596 (sage-400) : fonds de cartes, éléments secondaires (texte foncé dessus)
+ * terracotta #D9774B (terra-500) : cœur du logo, icônes, décor
+ *   → boutons d'action terra-600 (#B9572F, 4,7:1 avec blanc), liens et surtitres terra-700 (#9E4C2A)
+ * jaune miel #F2C14E (honey-400) : badges, icônes, soulignements (texte foncé dessus)
+ * fond sable #FAF6EE (sand-100), texte principal #1F2A2E (ink)
+ */
+@theme {
+    --color-olive-50: #eef4f1;
+    --color-olive-100: #d5e5dd;
+    --color-olive-200: #adcbbc;
+    --color-olive-300: #82ae99;
+    --color-olive-400: #5a8c77;
+    --color-olive-500: #3f7363;
+    --color-olive-600: #346659;
+    --color-olive-700: #2f5d50;
+    --color-olive-800: #264b41;
+    --color-olive-900: #1c3830;
+    --color-olive-950: #12241f;
+
+    --color-sage-50: #f1f7f2;
+    --color-sage-100: #e0ede3;
+    --color-sage-200: #c3dcc9;
+    --color-sage-300: #a6caaf;
+    --color-sage-400: #8db596;
+    --color-sage-500: #6f9c7a;
+    --color-sage-600: #557f60;
+    --color-sage-700: #3f5f47;
+
+    --color-terra-50: #fcf1ec;
+    --color-terra-100: #f8dfd3;
+    --color-terra-200: #f1bfa7;
+    --color-terra-300: #e9a07d;
+    --color-terra-400: #e18a62;
+    --color-terra-500: #d9774b;
+    --color-terra-600: #b9572f;
+    --color-terra-700: #9e4c2a;
+    --color-terra-800: #7e3d23;
+    --color-terra-900: #66321d;
+
+    --color-honey-100: #fdf3d6;
+    --color-honey-200: #fae5a9;
+    --color-honey-300: #f6d47b;
+    --color-honey-400: #f2c14e;
+    --color-honey-500: #e2a82c;
+    --color-honey-600: #b9861a;
+    --color-honey-700: #8a6512;
+
+    --color-sand-50: #fdfbf7;
+    --color-sand-100: #faf6ee;
+    --color-sand-200: #f2eadb;
+    --color-sand-300: #e6dac3;
+
+    --color-ink: #1f2a2e;
+    --color-muted: #4f625c;
+    --color-subtle: #62716c;
+
+    --font-sans: var(--font-body);
+    --font-display: var(--font-heading);
+
+    --radius-card: 1.5rem;
+    --shadow-soft: 0 10px 30px -12px rgb(47 93 80 / 0.16);
+    --shadow-lift: 0 20px 40px -16px rgb(47 93 80 / 0.26);
+
+    --animate-float: float 6s ease-in-out infinite;
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+}
+
+@layer base {
+    :root {
+        --font-body: 'Nunito', ui-sans-serif, system-ui, sans-serif;
+        --font-heading: 'Baloo 2', 'Nunito', ui-sans-serif, system-ui, sans-serif;
+    }
+
+    :root[lang='ar'] {
+        --font-body: 'Cairo', 'Nunito', ui-sans-serif, system-ui, sans-serif;
+        --font-heading: 'Baloo Bhaijaan 2', 'Cairo', ui-sans-serif, system-ui, sans-serif;
+    }
+
+    html {
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+        @apply bg-sand-100 font-sans text-ink antialiased;
+    }
+
+    h1, h2, h3, h4 {
+        @apply font-display text-olive-700;
+    }
+
+    /* Texte latin isolé dans une page arabe (noms, téléphones) */
+    .font-latin {
+        font-family: 'Nunito', ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .font-arabic {
+        font-family: 'Cairo', ui-sans-serif, system-ui, sans-serif;
+    }
+
+    [x-cloak] {
+        display: none !important;
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    /* Apparition douce (directive Alpine x-reveal) */
+    .reveal {
+        opacity: 0;
+        transform: translateY(24px);
+        transition:
+            opacity 0.7s ease,
+            transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+    }
+
+    .reveal-in {
+        opacity: 1;
+        transform: none;
+    }
+
+    /* Repère de la carte */
+    .educoeur-pin {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        inline-size: 44px;
+        block-size: 44px;
+        border-radius: 9999px 9999px 9999px 0;
+        transform: rotate(-45deg);
+        background: var(--color-terra-600);
+        box-shadow: var(--shadow-lift);
+    }
+
+    .educoeur-pin svg {
+        inline-size: 22px;
+        block-size: 22px;
+        color: #fff;
+        transform: rotate(45deg);
+    }
+
+    .leaflet-container {
+        font-family: var(--font-body);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+            scroll-behavior: auto !important;
+        }
+    }
+}
+
+@utility btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold transition
+        focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+}
+
+@utility btn-primary {
+    @apply btn bg-terra-600 text-white shadow-soft hover:bg-terra-700 focus-visible:outline-terra-600;
+}
+
+@utility btn-secondary {
+    @apply btn bg-olive-700 text-white hover:bg-olive-800 focus-visible:outline-olive-700;
+}
+
+@utility btn-ghost {
+    @apply btn bg-white text-olive-700 ring-1 ring-olive-200 hover:bg-sand-200 focus-visible:outline-olive-700;
+}
+
+@utility btn-danger {
+    @apply btn bg-red-600 text-white hover:bg-red-700 focus-visible:outline-red-600;
+}
+
+@utility btn-sm {
+    @apply px-3 py-1.5 text-xs;
+}
+
+@utility card {
+    @apply rounded-card bg-white shadow-soft ring-1 ring-olive-100/70;
+}
+
+@utility input {
+    @apply block w-full rounded-xl border-0 bg-white px-3.5 py-2.5 text-ink ring-1 ring-olive-400/70 transition
+        placeholder:text-subtle focus:ring-2 focus:ring-terra-500 focus:outline-none;
+}
+
+@utility input-error {
+    @apply ring-red-400 focus:ring-red-500;
+}
+
+@utility label {
+    @apply mb-1.5 block text-sm font-semibold text-olive-700;
+}
+
+@utility badge {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-bold;
+}
+
+/* Flèches et chevrons qui se retournent en RTL */
+@utility flip-rtl {
+    @apply rtl:-scale-x-100;
+}

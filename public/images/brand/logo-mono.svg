@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120" role="img" aria-label="Éducœur — إديكور" fill="currentColor">
+  <g transform="translate(-4 4)">
+    <path fill-rule="evenodd" d="M60 106C38 92 8 72 8 46 8 29 21 17 37 17c10 0 18 5 23 13 5-8 13-13 23-13 16 0 29 12 29 29 0 26-30 46-52 60Zm0-8C40 85 15 68 15 46c0-13 10-22 23-22 10 0 18 6 22 14 4-8 12-14 22-14 13 0 23 9 23 22 0 22-25 39-45 52Z"/>
+    <path d="M58.75 38h2.5v60h-2.5z"/>
+    <g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+      <path d="M25 47c9-2 18 0 27 6M27 59c8-1 17 2 25 8M34 71c6 0 12 3 17 8"/>
+      <path d="M95 47c-9-2-18 0-27 6M93 59c-8-1-17 2-25 8M86 71c-6 0-12 3-17 8"/>
+    </g>
+    <path d="M60 2l2.6 6.4L69 11l-6.4 2.6L60 20l-2.6-6.4L51 11l6.4-2.6Z"/>
+  </g>
+  <text x="126" y="72" font-family="'Baloo 2', 'Nunito', sans-serif" font-size="54" font-weight="800">Éducœur</text>
+  <text x="128" y="104" font-family="'Baloo Bhaijaan 2', 'Cairo', sans-serif" font-size="24" font-weight="700">إديكور · نُعلّم بقلب</text>
+</svg>
