@@ -26,6 +26,8 @@ final class Column
 
     private bool $exportable = true;
 
+    private bool $exportOnly = false;
+
     private string $classes = '';
 
     public function __construct(
@@ -75,6 +77,16 @@ final class Column
         return $this;
     }
 
+    /**
+     * Colonne présente uniquement dans l'export Excel (pas à l'écran).
+     */
+    public function exportOnly(): self
+    {
+        $this->exportOnly = true;
+
+        return $this;
+    }
+
     public function hideOnMobile(): self
     {
         $this->hiddenOnMobile = true;
@@ -102,6 +114,11 @@ final class Column
     public function isHiddenOnMobile(): bool
     {
         return $this->hiddenOnMobile;
+    }
+
+    public function isDisplayed(): bool
+    {
+        return ! $this->exportOnly;
     }
 
     public function isExportable(): bool

@@ -178,7 +178,7 @@ abstract class DataTable extends Component
     {
         return view($this->view(), [
             'rows' => $this->rows(),
-            'columns' => $this->columns(),
+            'columns' => array_values(array_filter($this->columns(), fn (Column $column) => $column->isDisplayed())),
             'tableFilters' => $this->filters(),
             'rowActions' => $this->rowActionsView(),
             'exportable' => $this->isExportable(),

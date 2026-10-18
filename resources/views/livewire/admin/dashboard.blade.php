@@ -4,7 +4,7 @@
     <x-ui.page-header :title="__('admin.nav.dashboard')" :description="Format::dayDate(now(), withYear: true)" />
 
     {{-- Chiffres clés --}}
-    <div class="mb-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <div class="mb-8 grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
         <x-ui.stat-card :label="__('admin.dashboard.today_lessons')" :value="$stats['today']" icon="calendar-days" tone="navy" />
         <x-ui.stat-card :label="__('admin.dashboard.active_teachers')" :value="$stats['teachers']" icon="academic-cap" tone="green"
                         :href="route('admin.teachers')" />
@@ -48,17 +48,18 @@
             @endforeach
         </div>
 
-        <div wire:loading.class="opacity-60" class="overflow-x-auto transition-opacity">
-            <div class="grid min-w-[980px] grid-cols-7 divide-x divide-olive-100/70 rtl:divide-x-reverse">
+        {{-- Mobile et tablette : jours empilés ; grand écran : 7 colonnes --}}
+        <div wire:loading.class="opacity-60" class="transition-opacity">
+            <div class="grid divide-y divide-olive-100/70 lg:grid-cols-7 lg:divide-x lg:divide-y-0 lg:rtl:divide-x-reverse">
                 @foreach ($days as $day)
                     @php($isToday = $day['date']->isToday())
-                    <div wire:key="day-{{ $day['date']->toDateString() }}" @class(['flex min-h-72 flex-col', 'bg-terra-50/50' => $isToday])>
-                        <div @class(['sticky top-0 border-b border-olive-100/70 px-3 py-2.5 text-center', 'bg-terra-50' => $isToday, 'bg-sand-50' => ! $isToday])>
+                    <div wire:key="day-{{ $day['date']->toDateString() }}" @class(['flex flex-col lg:min-h-72', 'bg-terra-50/50' => $isToday])>
+                        <div @class(['flex items-baseline justify-between gap-2 border-b border-olive-100/70 px-4 py-2.5 lg:block lg:px-3 lg:text-center', 'bg-terra-50' => $isToday, 'bg-sand-50' => ! $isToday])>
                             <p @class(['text-sm font-bold capitalize', 'text-terra-700' => $isToday, 'text-olive-700' => ! $isToday])>{{ $day['date']->translatedFormat('l') }}</p>
                             <p class="text-xs text-subtle">{{ $day['date']->translatedFormat('j F') }}</p>
                         </div>
 
-                        <ul class="flex-1 space-y-2 p-2">
+                        <ul class="grid flex-1 gap-2 p-2 sm:grid-cols-2 lg:grid-cols-1 lg:content-start">
                             @forelse ($day['lessons'] as $lesson)
                                 <li wire:key="lesson-{{ $lesson->id }}"
                                     style="--room: {{ $lesson->room->color }}"
@@ -90,7 +91,7 @@
                                     @endif
                                 </li>
                             @empty
-                                <li class="px-2 py-6 text-center text-xs text-subtle">{{ __('admin.dashboard.no_lessons') }}</li>
+                                <li class="px-2 py-3 text-center text-xs text-subtle lg:py-6">{{ __('admin.dashboard.no_lessons') }}</li>
                             @endforelse
                         </ul>
                     </div>

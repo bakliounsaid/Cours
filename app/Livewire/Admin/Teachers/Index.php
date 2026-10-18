@@ -41,9 +41,10 @@ class Index extends DataTable
             Column::make('users.name', __('admin.teachers.name'))->sortable('users.name')
                 ->format(fn (Teacher $teacher) => view('livewire.admin.teachers.name-cell', ['teacher' => $teacher]))
                 ->exportAs(fn (Teacher $teacher) => $teacher->user->name),
-            Column::make('email', __('admin.teachers.email'))->sortable('users.email')->hideOnMobile()
-                ->format(fn (Teacher $teacher) => $teacher->user->email),
+            Column::make('email', __('admin.teachers.email'))->exportOnly()
+                ->exportAs(fn (Teacher $teacher) => $teacher->user->email),
             Column::make('phone', __('admin.teachers.phone'))
+                ->classes('whitespace-nowrap')
                 ->format(fn (Teacher $teacher) => $teacher->phone ? Phone::format($teacher->phone) : '—'),
             Column::make('subjects', __('admin.teachers.subjects'))
                 ->format(fn (Teacher $teacher) => $teacher->subjects->pluck('name')->implode(', ')),

@@ -30,7 +30,7 @@
 
     {{-- Chiffres du mois --}}
     <h2 class="mb-3 text-lg font-bold">{{ __('admin.teachers.this_month', ['month' => \App\Support\Format::month(now())]) }}</h2>
-    <div class="mb-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <div class="mb-8 grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
         <x-ui.stat-card :label="__('admin.teachers.stats.done')" :value="$stats['done']" icon="check-circle" tone="green" />
         <x-ui.stat-card :label="__('admin.teachers.stats.upcoming')" :value="$stats['upcoming']" icon="calendar" tone="navy" />
         <x-ui.stat-card :label="__('admin.teachers.stats.cancelled')" :value="$stats['cancelled']" icon="x-circle" tone="red" />
