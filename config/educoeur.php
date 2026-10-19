@@ -3,15 +3,19 @@
 return [
 
     /*
-    | Langues disponibles. La première est la langue par défaut.
+    | Langues disponibles (la langue par défaut est APP_LOCALE).
     | "carbon" est la locale utilisée pour les dates (ar_DZ : mois algériens).
     */
     'locales' => [
-        'fr' => ['carbon' => 'fr', 'dir' => 'ltr', 'native' => 'Français', 'short' => 'FR'],
-        'ar' => ['carbon' => 'ar_DZ', 'dir' => 'rtl', 'native' => 'العربية', 'short' => 'ع'],
+        'fr' => ['carbon' => 'fr', 'dir' => 'ltr', 'native' => 'Français', 'short' => 'FR', 'og' => 'fr_DZ'],
+        'ar' => ['carbon' => 'ar_DZ', 'dir' => 'rtl', 'native' => 'العربية', 'short' => 'ع', 'og' => 'ar_DZ'],
+        'en' => ['carbon' => 'en', 'dir' => 'ltr', 'native' => 'English', 'short' => 'EN', 'og' => 'en_US'],
     ],
 
     'currency' => 'DA',
+
+    // Secret partagé avec Vercel Cron (en-tête « Authorization: Bearer … »)
+    'cron_secret' => env('CRON_SECRET'),
 
     'groups' => [
         'max_students' => 15,

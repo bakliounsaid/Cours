@@ -73,10 +73,22 @@
     --shadow-lift: 0 20px 40px -16px rgb(47 93 80 / 0.26);
 
     --animate-float: float 6s ease-in-out infinite;
+    --animate-fade-up: fade-up 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    --animate-shimmer: shimmer 1.4s linear infinite;
 
     @keyframes float {
         0%, 100% { transform: translateY(0); }
         50% { transform: translateY(-10px); }
+    }
+
+    @keyframes fade-up {
+        from { opacity: 0; transform: translateY(12px); }
+        to { opacity: 1; transform: none; }
+    }
+
+    @keyframes shimmer {
+        from { background-position: -200% 0; }
+        to { background-position: 200% 0; }
     }
 }
 
@@ -170,7 +182,12 @@
 
 @utility btn {
     @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold transition
-        focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+        focus-visible:outline-2 focus-visible:outline-offset-2 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-50;
+}
+
+/* Retour tactile : léger enfoncement au clic */
+@utility press {
+    @apply transition active:scale-[0.96];
 }
 
 @utility btn-primary {
@@ -195,6 +212,67 @@
 
 @utility card {
     @apply rounded-card bg-white shadow-soft ring-1 ring-olive-100/70;
+}
+
+/* Carte qui se soulève au survol */
+@utility card-hover {
+    @apply transition duration-200 hover:-translate-y-0.5 hover:shadow-lift hover:ring-olive-200;
+}
+
+/* Onglets segmentés : <div class="segmented"><button aria-selected="true">…</button></div> */
+@utility segmented {
+    @apply flex gap-1 overflow-x-auto rounded-full bg-white p-1 ring-1 ring-olive-100;
+
+    & > button {
+        @apply inline-flex flex-1 items-center justify-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-bold whitespace-nowrap text-muted transition hover:text-olive-700 active:scale-[0.97];
+    }
+
+    & > button[aria-selected='true'] {
+        @apply bg-olive-700 text-white shadow-soft;
+    }
+}
+
+/* Puce à cocher (case cachée à l'intérieur) */
+@utility chip {
+    @apply inline-flex cursor-pointer items-center gap-1 rounded-full bg-white px-3 py-1.5 text-sm font-bold text-olive-700 ring-1 ring-olive-200 transition select-none
+        hover:bg-sand-100 active:scale-[0.96] has-checked:bg-terra-600 has-checked:text-white has-checked:ring-terra-600 has-focus-visible:outline-2 has-focus-visible:outline-terra-500;
+}
+
+/* Barre de progression : <div class="progress"><span style="width: 40%"></span></div> */
+@utility progress {
+    @apply h-2 overflow-hidden rounded-full bg-sand-200;
+
+    & > span {
+        @apply block h-full rounded-full transition-[width] duration-700 ease-out;
+    }
+}
+
+@utility avatar {
+    @apply flex size-10 shrink-0 items-center justify-center rounded-full bg-sage-100 text-sm font-extrabold text-sage-700;
+}
+
+@utility menu-item {
+    @apply flex w-full items-center gap-2 rounded-xl px-3 py-2 text-start text-sm font-semibold text-muted transition hover:bg-sand-100 hover:text-ink;
+}
+
+@utility spinner {
+    @apply inline-block size-4 animate-spin rounded-full border-2 border-current border-e-transparent;
+}
+
+@utility skeleton {
+    @apply animate-shimmer rounded-xl bg-[linear-gradient(90deg,var(--color-sand-200)_25%,var(--color-sand-100)_50%,var(--color-sand-200)_75%)] bg-[length:200%_100%];
+}
+
+/* Repère sous l'onglet actif de la barre du bas */
+@utility tab-indicator {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: calc(100% / var(--tabs) * var(--index) + (100% / var(--tabs) - 2rem) / 2);
+    inline-size: 2rem;
+    block-size: 3px;
+    border-radius: 0 0 9999px 9999px;
+    background: var(--color-terra-600);
+    transition: inset-inline-start 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
 @utility input {

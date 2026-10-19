@@ -39,8 +39,9 @@ it('ne renvoie jamais un enseignant vers une page admin demandée avant connexio
         ->assertRedirect(route('teacher.today'));
 });
 
-it('applique la langue enregistrée sur le compte', function () {
-    $admin = User::factory()->admin()->arabic()->create();
+it('garde la langue de la session après la connexion', function () {
+    $admin = User::factory()->admin()->create();
+    session()->put('locale', 'ar');
 
     Livewire::test(Login::class)
         ->set('form.email', $admin->email)
@@ -62,10 +63,12 @@ it('refuse un mauvais mot de passe avec un message traduit', function () {
     $this->assertGuest();
 });
 
-it('enregistre la langue choisie sur le compte connecté', function () {
+it('garde la langue choisie en session uniquement', function () {
     $admin = User::factory()->admin()->create();
 
-    $this->actingAs($admin)->from('/admin')->get(route('locale.switch', 'ar'))->assertRedirect('/admin');
+    $this->actingAs($admin)->from('/admin')->get(route('locale.switch', 'en'))
+        ->assertRedirect('/admin')
+        ->assertSessionHas('locale', 'en');
 
-    expect($admin->fresh()->locale->value)->toBe('ar');
+    $this->get('/admin')->assertSee('<html lang="en" dir="ltr">', false);
 });

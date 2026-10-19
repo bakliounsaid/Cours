@@ -18,7 +18,8 @@
                 @if ($phone)
                     <span class="inline-flex items-center gap-1" dir="ltr"><x-icon name="phone" class="size-4" /> {{ $phone }}</span>
                 @endif
-                <span class="inline-flex items-center gap-1"><x-icon name="banknotes" class="size-4" /> {{ __('admin.teachers.rate_value', ['amount' => \App\Support\Format::money($teacher->rate_per_lesson)]) }}</span>
+                <span class="inline-flex items-center gap-1"><x-icon name="user-group" class="size-4" /> {{ __('admin.teachers.rate_group_value', ['amount' => \App\Support\Format::money($teacher->rate_group)]) }}</span>
+                <span class="inline-flex items-center gap-1"><x-icon name="user" class="size-4" /> {{ __('admin.teachers.rate_individual_value', ['amount' => \App\Support\Format::money($teacher->rate_individual)]) }}</span>
             </p>
             <div class="mt-3 flex flex-wrap gap-1.5">
                 @foreach ($teacher->subjects as $subject)

@@ -12,8 +12,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->unique()->constrained()->cascadeOnDelete();
             $table->string('phone', 20)->nullable();
-            // Tarif par séance, en dinars
-            $table->unsignedInteger('rate_per_lesson')->default(0);
+            // Tarifs par séance, en dinars : groupe collectif et cours individuel
+            $table->unsignedInteger('rate_group')->default(0);
+            $table->unsignedInteger('rate_individual')->default(0);
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });

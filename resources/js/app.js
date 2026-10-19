@@ -30,6 +30,60 @@ document.addEventListener('alpine:init', () => {
         observer.observe(el);
         cleanup(() => observer.disconnect());
     });
+
+    /**
+     * x-count-up="42" : le nombre défile de 0 à sa valeur à l'affichage.
+     */
+    window.Alpine.directive('count-up', (el, { expression }) => {
+        const target = Number(expression) || 0;
+        // Séparateur de milliers : espace simple, comme Format::money()
+        const format = (value) => String(Math.round(value)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+
+        if (prefersReducedMotion() || target === 0) {
+            el.textContent = format(target);
+            return;
+        }
+
+        const duration = 900;
+        const start = performance.now();
+        const step = (now) => {
+            const progress = Math.min((now - start) / duration, 1);
+            el.textContent = format(target * (1 - Math.pow(1 - progress, 3)));
+            if (progress < 1) {
+                requestAnimationFrame(step);
+            }
+        };
+        requestAnimationFrame(step);
+    });
+
+    /**
+     * État d'une séance du jour, mis à jour chaque minute :
+     * « soon » (avec le temps restant), « live » ou « done ».
+     */
+    window.Alpine.data('lessonClock', (startsAt, endsAt) => ({
+        state: 'soon',
+        label: '',
+        timer: null,
+        init() {
+            this.tick();
+            this.timer = setInterval(() => this.tick(), 30000);
+        },
+        destroy() {
+            clearInterval(this.timer);
+        },
+        tick() {
+            const now = Date.now() / 1000;
+            if (now >= endsAt) {
+                this.state = 'done';
+            } else if (now >= startsAt) {
+                this.state = 'live';
+            } else {
+                this.state = 'soon';
+                const minutes = Math.ceil((startsAt - now) / 60);
+                this.label = minutes >= 60 ? `${Math.floor(minutes / 60)} h ${String(minutes % 60).padStart(2, '0')}` : `${minutes} min`;
+            }
+        },
+    }));
 });
 
 /**

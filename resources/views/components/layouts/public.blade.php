@@ -22,8 +22,11 @@
         <meta property="og:image:width" content="1200">
         <meta property="og:image:height" content="630">
         <meta property="og:image:alt" content="{{ __('app.name') }} — {{ __('app.slogan') }}">
-        <meta property="og:locale" content="{{ $locale === \App\Enums\Locale::Ar ? 'ar_DZ' : 'fr_DZ' }}">
-        <meta property="og:locale:alternate" content="{{ $locale === \App\Enums\Locale::Ar ? 'fr_DZ' : 'ar_DZ' }}">
+        <meta property="og:locale" content="{{ $locale->openGraph() }}">
+        @foreach (\App\Enums\Locale::cases() as $alternate)
+            @continue($alternate === $locale)
+            <meta property="og:locale:alternate" content="{{ $alternate->openGraph() }}">
+        @endforeach
         <meta name="twitter:card" content="summary_large_image">
 
         <script type="application/ld+json">

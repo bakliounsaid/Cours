@@ -24,8 +24,8 @@ function teacherForm(): Testable
         ->set('form.email', 'karim@educoeur.dz')
         ->set('form.password', 'secret-123')
         ->set('form.phone', '0555 12 34 56')
-        ->set('form.locale', 'ar')
-        ->set('form.rate_per_lesson', 2000)
+        ->set('form.rate_group', 2000)
+        ->set('form.rate_individual', 3000)
         ->set('form.subject_ids', [(string) test()->maths->id]);
 }
 
@@ -34,10 +34,10 @@ it('crée un compte enseignant qui peut se connecter', function () {
 
     $user = User::query()->where('email', 'karim@educoeur.dz')->sole();
     expect($user->role)->toBe(UserRole::Teacher)
-        ->and($user->locale->value)->toBe('ar')
         ->and(Hash::check('secret-123', $user->password))->toBeTrue()
         ->and($user->teacher->phone)->toBe('0555123456')
-        ->and($user->teacher->rate_per_lesson)->toBe(2000)
+        ->and($user->teacher->rate_group)->toBe(2000)
+        ->and($user->teacher->rate_individual)->toBe(3000)
         ->and($user->teacher->subjects->pluck('id')->all())->toBe([$this->maths->id]);
 
     auth()->logout();

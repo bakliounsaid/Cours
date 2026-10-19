@@ -12,12 +12,12 @@ class SwitchLocaleController extends Controller
     {
         $request->session()->put('locale', $locale->value);
 
-        $request->user()?->update(['locale' => $locale]);
-
         $previous = url()->previous();
 
-        // Sur la page d'accueil, on bascule vers l'URL de la langue (/fr ↔ /ar).
-        if (in_array(parse_url($previous, PHP_URL_PATH) ?? '/', ['/', '/fr', '/ar'], true)) {
+        // Sur la page d'accueil, on bascule vers l'URL de la langue (/fr, /ar, /en).
+        $homePaths = ['/', ...array_map(fn (string $value) => '/'.$value, Locale::values())];
+
+        if (in_array(parse_url($previous, PHP_URL_PATH) ?? '/', $homePaths, true)) {
             return redirect()->route('home.localized', ['locale' => $locale->value]);
         }
 

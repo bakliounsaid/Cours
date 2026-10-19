@@ -32,7 +32,6 @@ class Login extends Component
         session()->regenerate();
 
         $user = Auth::user();
-        session()->put('locale', $user->preferredLocale());
 
         $home = route($user->role->homeRoute());
         $intended = (string) session()->pull('url.intended', $home);

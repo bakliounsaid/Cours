@@ -37,16 +37,16 @@ class ReferenceDataSeeder extends Seeder
     private function subjects(): void
     {
         $subjects = [
-            ['maths', 'Mathématiques', 'الرياضيات', '#B9572F', 'calculator'],
-            ['physique', 'Physique', 'الفيزياء', '#2F5D50', 'light-bulb'],
-            ['arabe', 'Arabe', 'اللغة العربية', '#557F60', 'book-open'],
-            ['francais', 'Français', 'اللغة الفرنسية', '#8A6512', 'chat'],
-            ['anglais', 'Anglais', 'اللغة الإنجليزية', '#3E6B78', 'sparkles'],
+            ['maths', 'Mathématiques', 'الرياضيات', 'Mathematics', '#B9572F', 'calculator'],
+            ['physique', 'Physique', 'الفيزياء', 'Physics', '#2F5D50', 'light-bulb'],
+            ['arabe', 'Arabe', 'اللغة العربية', 'Arabic', '#557F60', 'book-open'],
+            ['francais', 'Français', 'اللغة الفرنسية', 'French', '#8A6512', 'chat'],
+            ['anglais', 'Anglais', 'اللغة الإنجليزية', 'English', '#3E6B78', 'sparkles'],
         ];
 
-        foreach ($subjects as $order => [$slug, $fr, $ar, $color, $icon]) {
+        foreach ($subjects as $order => [$slug, $fr, $ar, $en, $color, $icon]) {
             Subject::query()->updateOrCreate(['slug' => $slug], [
-                'name' => ['fr' => $fr, 'ar' => $ar],
+                'name' => ['fr' => $fr, 'ar' => $ar, 'en' => $en],
                 'color' => $color,
                 'icon' => $icon,
                 'sort_order' => $order + 1,
@@ -58,18 +58,19 @@ class ReferenceDataSeeder extends Seeder
     {
         $ordinalsFr = [1 => '1re', 2 => '2e', 3 => '3e', 4 => '4e', 5 => '5e'];
         $ordinalsAr = [1 => 'الأولى', 2 => 'الثانية', 3 => 'الثالثة', 4 => 'الرابعة', 5 => 'الخامسة'];
+        $ordinalsEn = [1 => '1st', 2 => '2nd', 3 => '3rd', 4 => '4th', 5 => '5th'];
 
         $order = 0;
 
         foreach (Cycle::cases() as $cycle) {
             foreach (range(1, $cycle->years()) as $year) {
-                [$fr, $ar] = $cycle === Cycle::Primary
-                    ? ["{$ordinalsFr[$year]} année primaire", "السنة {$ordinalsAr[$year]} ابتدائي"]
-                    : ["{$ordinalsFr[$year]} année moyenne (CEM)", "السنة {$ordinalsAr[$year]} متوسط"];
+                [$fr, $ar, $en] = $cycle === Cycle::Primary
+                    ? ["{$ordinalsFr[$year]} année primaire", "السنة {$ordinalsAr[$year]} ابتدائي", "{$ordinalsEn[$year]} year primary"]
+                    : ["{$ordinalsFr[$year]} année moyenne (CEM)", "السنة {$ordinalsAr[$year]} متوسط", "{$ordinalsEn[$year]} year middle school (CEM)"];
 
                 Level::query()->updateOrCreate(
                     ['cycle' => $cycle, 'year' => $year],
-                    ['name' => ['fr' => $fr, 'ar' => $ar], 'sort_order' => ++$order],
+                    ['name' => ['fr' => $fr, 'ar' => $ar, 'en' => $en], 'sort_order' => ++$order],
                 );
             }
         }

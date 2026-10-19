@@ -3,7 +3,6 @@
 namespace App\Livewire\Forms;
 
 use App\Actions\Teachers\SaveTeacher;
-use App\Enums\Locale;
 use App\Models\Teacher;
 use App\Rules\AlgerianPhone;
 use App\Support\Phone;
@@ -21,9 +20,9 @@ class TeacherForm extends ModelForm
 
     public string $phone = '';
 
-    public string $locale = 'fr';
+    public int|string $rate_group = 2000;
 
-    public int|string $rate_per_lesson = 2000;
+    public int|string $rate_individual = 2500;
 
     public bool $is_active = true;
 
@@ -42,8 +41,8 @@ class TeacherForm extends ModelForm
             'email' => ['required', 'email', 'max:190', Rule::unique('users', 'email')->ignore($userId)],
             'password' => [$this->isEditing() ? 'nullable' : 'required', 'string', Password::min(8)],
             'phone' => ['nullable', 'string', new AlgerianPhone],
-            'locale' => ['required', Rule::enum(Locale::class)],
-            'rate_per_lesson' => ['required', 'integer', 'min:0', 'max:100000'],
+            'rate_group' => ['required', 'integer', 'min:0', 'max:100000'],
+            'rate_individual' => ['required', 'integer', 'min:0', 'max:100000'],
             'is_active' => ['boolean'],
             'subject_ids' => ['required', 'array', 'min:1'],
             'subject_ids.*' => [Rule::exists('subjects', 'id')],
@@ -60,8 +59,8 @@ class TeacherForm extends ModelForm
         $this->email = $model->user->email;
         $this->password = '';
         $this->phone = $model->phone ? Phone::format($model->phone) : '';
-        $this->locale = $model->user->locale->value;
-        $this->rate_per_lesson = $model->rate_per_lesson;
+        $this->rate_group = $model->rate_group;
+        $this->rate_individual = $model->rate_individual;
         $this->is_active = $model->is_active;
         $this->subject_ids = $model->subjects->pluck('id')->map(fn ($id) => (string) $id)->all();
     }

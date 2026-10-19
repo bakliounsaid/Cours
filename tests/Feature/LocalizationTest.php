@@ -29,8 +29,26 @@ it('bascule de langue et revient sur la page d’accueil localisée', function (
         ->assertSessionHas('locale', 'ar');
 });
 
+it('affiche la version anglaise', function () {
+    $this->get('/en')
+        ->assertOk()
+        ->assertSee('<html lang="en" dir="ltr">', false)
+        ->assertSee('Enrol my child');
+});
+
+it('bascule vers l’anglais depuis la page d’accueil', function () {
+    $this->from('/ar')
+        ->get(route('locale.switch', 'en'))
+        ->assertRedirect(route('home.localized', 'en'))
+        ->assertSessionHas('locale', 'en');
+});
+
+it('utilise le français par défaut sans langue en session', function () {
+    $this->get(route('login'))->assertSee('<html lang="fr" dir="ltr">', false);
+});
+
 it('refuse une langue inconnue', function () {
-    $this->get('/langue/en')->assertNotFound();
+    $this->get('/langue/de')->assertNotFound();
 });
 
 it('formate les dates dans la langue courante avec des chiffres occidentaux', function () {
@@ -40,4 +58,8 @@ it('formate les dates dans la langue courante avec des chiffres occidentaux', fu
     app()->setLocale('ar');
     expect(Format::dayDate('2026-10-20'))->toBe('الثلاثاء 20 أكتوبر')
         ->and(Format::money(2500))->toBe('2 500 دج');
+
+    app()->setLocale('en');
+    expect(Format::dayDate('2026-10-20'))->toBe('Tuesday 20 October')
+        ->and(Format::money(2500))->toBe('2 500 DA');
 });

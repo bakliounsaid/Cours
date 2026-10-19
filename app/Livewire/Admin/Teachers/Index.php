@@ -48,8 +48,12 @@ class Index extends DataTable
                 ->format(fn (Teacher $teacher) => $teacher->phone ? Phone::format($teacher->phone) : '—'),
             Column::make('subjects', __('admin.teachers.subjects'))
                 ->format(fn (Teacher $teacher) => $teacher->subjects->pluck('name')->implode(', ')),
-            Column::make('rate_per_lesson', __('admin.teachers.rate'))->sortable()
-                ->format(fn (Teacher $teacher) => Format::money($teacher->rate_per_lesson)),
+            Column::make('rate_group', __('admin.teachers.rate_group_short'))->sortable()
+                ->classes('whitespace-nowrap')
+                ->format(fn (Teacher $teacher) => Format::money($teacher->rate_group)),
+            Column::make('rate_individual', __('admin.teachers.rate_individual_short'))->sortable()
+                ->classes('whitespace-nowrap')
+                ->format(fn (Teacher $teacher) => Format::money($teacher->rate_individual)),
             Column::make('lessons_this_month', __('admin.teachers.lessons_this_month'))->sortable(),
             Column::make('is_active', __('ui.status'))->sortable('teachers.is_active')
                 ->format(fn (Teacher $teacher) => view('tables.cells.badge', [

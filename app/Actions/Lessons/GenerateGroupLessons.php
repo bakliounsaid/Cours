@@ -24,14 +24,16 @@ class GenerateGroupLessons
     public function __construct(private readonly ConflictChecker $conflicts) {}
 
     /**
+     * @param  Group|null  $only  limiter la génération à un seul groupe
      * @return array{created: int, skipped: list<array{group: string, starts_at: string, reason: string}>}
      */
-    public function handle(CarbonInterface $from, CarbonInterface $to): array
+    public function handle(CarbonInterface $from, CarbonInterface $to, ?Group $only = null): array
     {
         $report = ['created' => 0, 'skipped' => []];
 
         $groups = Group::query()
             ->active()
+            ->when($only, fn (Builder $query) => $query->whereKey($only->id))
             ->whereDate('starts_on', '<=', $to)
             ->where(fn (Builder $query) => $query->whereNull('ends_on')->orWhereDate('ends_on', '>=', $from))
             ->with(['timeSlots' => fn ($query) => $query->active()])

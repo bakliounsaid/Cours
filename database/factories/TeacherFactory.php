@@ -19,7 +19,8 @@ class TeacherFactory extends Factory
         return [
             'user_id' => User::factory()->teacher(),
             'phone' => '05'.fake()->numerify('########'),
-            'rate_per_lesson' => fake()->randomElement([1500, 2000, 2500]),
+            'rate_group' => fake()->randomElement([1500, 2000, 2500]),
+            'rate_individual' => fake()->randomElement([2500, 3000]),
             'is_active' => true,
         ];
     }

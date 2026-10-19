@@ -2,6 +2,7 @@
 
 use App\Enums\Locale;
 use App\Http\Controllers\Auth\LogoutController;
+use App\Http\Controllers\CronController;
 use App\Http\Controllers\SwitchLocaleController;
 use App\Livewire\Auth\ForgotPassword;
 use App\Livewire\Auth\Login;
@@ -18,6 +19,11 @@ Route::livewire('/{locale}', HomePage::class)->whereIn('locale', Locale::values(
 Route::get('/langue/{locale}', SwitchLocaleController::class)
     ->whereIn('locale', Locale::values())
     ->name('locale.switch');
+
+/*
+| Tâches planifiées appelées par Vercel Cron (protégées par CRON_SECRET)
+*/
+Route::get('/systeme/cron/seances', [CronController::class, 'lessons'])->name('cron.lessons');
 
 /*
 | Authentification (admin et enseignants uniquement)

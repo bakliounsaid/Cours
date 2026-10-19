@@ -28,10 +28,20 @@ return new class extends Migration
             $table->foreignId('subject_id')->constrained()->cascadeOnDelete();
             $table->primary(['student_id', 'subject_id']);
         });
+
+        // Élèves suivis par un enseignant en cours individuels
+        Schema::create('student_teacher', function (Blueprint $table) {
+            $table->foreignId('student_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('teacher_id')->constrained()->cascadeOnDelete();
+            $table->timestamp('created_at')->useCurrent();
+            $table->primary(['student_id', 'teacher_id']);
+            $table->index('teacher_id');
+        });
     }
 
     public function down(): void
     {
+        Schema::dropIfExists('student_teacher');
         Schema::dropIfExists('student_subject');
         Schema::dropIfExists('students');
     }

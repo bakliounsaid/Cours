@@ -59,6 +59,12 @@ class Student extends Model
         return $this->belongsToMany(Group::class)->withPivot('joined_at');
     }
 
+    /** Enseignants qui le suivent en cours individuels. */
+    public function individualTeachers(): BelongsToMany
+    {
+        return $this->belongsToMany(Teacher::class)->withPivot('created_at');
+    }
+
     /** Séances individuelles / spéciales auxquelles l'élève est inscrit directement. */
     public function extraLessons(): BelongsToMany
     {

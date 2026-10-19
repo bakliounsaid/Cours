@@ -2,10 +2,8 @@
 
 namespace App\Models;
 
-use App\Enums\Locale;
 use App\Enums\UserRole;
 use Database\Factories\UserFactory;
-use Illuminate\Contracts\Translation\HasLocalePreference;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -14,7 +12,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use NotificationChannels\WebPush\HasPushSubscriptions;
 
-class User extends Authenticatable implements HasLocalePreference
+class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, HasPushSubscriptions, Notifiable;
@@ -24,7 +22,6 @@ class User extends Authenticatable implements HasLocalePreference
         'email',
         'password',
         'role',
-        'locale',
     ];
 
     protected $hidden = [
@@ -38,7 +35,6 @@ class User extends Authenticatable implements HasLocalePreference
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'role' => UserRole::class,
-            'locale' => Locale::class,
         ];
     }
 
@@ -55,14 +51,6 @@ class User extends Authenticatable implements HasLocalePreference
     public function isTeacher(): bool
     {
         return $this->role === UserRole::Teacher;
-    }
-
-    /**
-     * Les notifications (e-mail, application) partent dans la langue du compte.
-     */
-    public function preferredLocale(): string
-    {
-        return ($this->locale ?? Locale::default())->value;
     }
 
     public function initials(): string

@@ -10,6 +10,7 @@ use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Foundation\Events\LocaleUpdated;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
 
@@ -29,6 +30,10 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->syncDateLocale();
+
+        if ($this->app->isProduction()) {
+            URL::forceScheme('https');
+        }
 
         // Les requêtes Livewire (/livewire/update) repassent par la vérification du rôle.
         Livewire::addPersistentMiddleware([EnsureUserHasRole::class]);

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\LessonType;
 use Database\Factories\TeacherFactory;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
@@ -19,14 +20,16 @@ class Teacher extends Model
     protected $fillable = [
         'user_id',
         'phone',
-        'rate_per_lesson',
+        'rate_group',
+        'rate_individual',
         'is_active',
     ];
 
     protected function casts(): array
     {
         return [
-            'rate_per_lesson' => 'integer',
+            'rate_group' => 'integer',
+            'rate_individual' => 'integer',
             'is_active' => 'boolean',
         ];
     }
@@ -44,6 +47,37 @@ class Teacher extends Model
     public function groups(): HasMany
     {
         return $this->hasMany(Group::class);
+    }
+
+    /** Élèves suivis en cours individuels. */
+    public function individualStudents(): BelongsToMany
+    {
+        return $this->belongsToMany(Student::class)->withPivot('created_at');
+    }
+
+    /**
+     * Ses élèves : ceux de ses groupes et ceux qu'il suit en cours individuels.
+     *
+     * @return Builder<Student>
+     */
+    public function students(): Builder
+    {
+        return Student::query()->where(function (Builder $query) {
+            $query->whereHas('groups', fn (Builder $groups) => $groups->where('teacher_id', $this->id))
+                ->orWhereHas('individualTeachers', fn (Builder $teachers) => $teachers->whereKey($this->id));
+        });
+    }
+
+    /**
+     * Tarif d'une séance : individuel pour un cours particulier (ou son rattrapage /
+     * remplacement hors groupe), tarif de groupe sinon.
+     */
+    public function rateFor(Lesson $lesson): int
+    {
+        $individual = $lesson->type === LessonType::Individual
+            || ($lesson->group_id === null && $lesson->type !== LessonType::Special && $lesson->type !== LessonType::Group);
+
+        return $individual ? $this->rate_individual : $this->rate_group;
     }
 
     public function lessons(): HasMany

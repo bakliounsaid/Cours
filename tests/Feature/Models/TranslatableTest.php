@@ -26,11 +26,11 @@ it('modifie seulement la langue courante quand on affecte une chaîne', function
     app()->setLocale('ar');
     $subject->update(['name' => 'اللغة الإنجليزية']);
 
-    expect($subject->fresh()->getTranslations('name'))->toBe(['fr' => 'Anglais', 'ar' => 'اللغة الإنجليزية']);
+    expect($subject->fresh()->getTranslations('name'))->toBe(['fr' => 'Anglais', 'ar' => 'اللغة الإنجليزية', 'en' => null]);
 });
 
 it('expose les deux versions en tableau', function () {
     $subject = Subject::factory()->create(['name' => ['fr' => 'Arabe', 'ar' => 'العربية']]);
 
-    expect($subject->toArray()['name'])->toBe(['fr' => 'Arabe', 'ar' => 'العربية']);
+    expect($subject->toArray()['name'])->toBe(['fr' => 'Arabe', 'ar' => 'العربية', 'en' => null]);
 });

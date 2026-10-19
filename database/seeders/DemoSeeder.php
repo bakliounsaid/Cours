@@ -39,13 +39,12 @@ class DemoSeeder extends Seeder
             'name' => 'Direction Éducœur',
             'password' => Hash::make(self::PASSWORD),
             'role' => UserRole::Admin,
-            'locale' => Locale::Fr,
             'email_verified_at' => now(),
         ]);
 
         $teachers = [
             'karim' => $this->teacher('Karim Benali', self::TEACHER_EMAIL, '0555 12 34 56', 2000, ['maths', 'physique']),
-            'amina' => $this->teacher('Amina Haddad', 'amina@educoeur.dz', '0661 23 45 67', 1800, ['arabe'], Locale::Ar),
+            'amina' => $this->teacher('Amina Haddad', 'amina@educoeur.dz', '0661 23 45 67', 1800, ['arabe']),
             'sarah' => $this->teacher('Sarah Messaoudi', 'sarah@educoeur.dz', '0770 34 56 78', 1800, ['francais']),
             'yacine' => $this->teacher('Yacine Boudiaf', 'yacine@educoeur.dz', '0550 45 67 89', 1800, ['anglais']),
             'nadia' => $this->teacher('Nadia Cherif', 'nadia@educoeur.dz', '0698 56 78 90', 2000, ['maths', 'physique']),
@@ -120,7 +119,7 @@ class DemoSeeder extends Seeder
                 $lesson->checkin()->create([
                     'teacher_id' => $lesson->teacher_id,
                     'checked_at' => $lesson->starts_at->copy()->addMinutes(5),
-                    'rate_amount' => $lesson->teacher->rate_per_lesson,
+                    'rate_amount' => $lesson->teacher->rateFor($lesson),
                 ]);
             });
     }
@@ -128,19 +127,19 @@ class DemoSeeder extends Seeder
     /**
      * @param  list<string>  $subjectSlugs
      */
-    private function teacher(string $name, string $email, string $phone, int $rate, array $subjectSlugs, Locale $locale = Locale::Fr): Teacher
+    private function teacher(string $name, string $email, string $phone, int $rate, array $subjectSlugs): Teacher
     {
         $user = User::query()->updateOrCreate(['email' => $email], [
             'name' => $name,
             'password' => Hash::make(self::PASSWORD),
             'role' => UserRole::Teacher,
-            'locale' => $locale,
             'email_verified_at' => now(),
         ]);
 
         $teacher = Teacher::query()->updateOrCreate(['user_id' => $user->id], [
             'phone' => $phone,
-            'rate_per_lesson' => $rate,
+            'rate_group' => $rate,
+            'rate_individual' => $rate + 1000,
             'is_active' => true,
         ]);
 

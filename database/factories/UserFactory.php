@@ -2,7 +2,6 @@
 
 namespace Database\Factories;
 
-use App\Enums\Locale;
 use App\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -30,7 +29,6 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'role' => UserRole::Teacher,
-            'locale' => Locale::Fr,
             'remember_token' => Str::random(10),
         ];
     }
@@ -43,11 +41,6 @@ class UserFactory extends Factory
     public function teacher(): static
     {
         return $this->state(fn () => ['role' => UserRole::Teacher]);
-    }
-
-    public function arabic(): static
-    {
-        return $this->state(fn () => ['locale' => Locale::Ar]);
     }
 
     public function unverified(): static

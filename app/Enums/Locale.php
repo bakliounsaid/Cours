@@ -10,6 +10,7 @@ enum Locale: string
 
     case Fr = 'fr';
     case Ar = 'ar';
+    case En = 'en';
 
     public static function default(): self
     {
@@ -46,8 +47,9 @@ enum Locale: string
         return config("educoeur.locales.{$this->value}.short");
     }
 
-    public function other(): self
+    /** Locale Open Graph (« fr_DZ », « ar_DZ », « en_US »). */
+    public function openGraph(): string
     {
-        return $this === self::Fr ? self::Ar : self::Fr;
+        return config("educoeur.locales.{$this->value}.og");
     }
 }

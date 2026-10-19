@@ -3,12 +3,12 @@
 use Illuminate\Support\Arr;
 
 /**
- * Toute chaîne doit exister en français ET en arabe.
+ * Toute chaîne doit exister en français, en arabe ET en anglais.
  */
-it('a les mêmes clés de traduction en français et en arabe', function (string $file) {
+it('a les mêmes clés de traduction dans toutes les langues', function (string $file, string $locale) {
     $fr = array_keys(Arr::dot(require lang_path("fr/{$file}")));
-    $ar = array_keys(Arr::dot(require lang_path("ar/{$file}")));
+    $other = array_keys(Arr::dot(require lang_path("{$locale}/{$file}")));
 
-    expect(array_values(array_diff($fr, $ar)))->toBe([], "Clés manquantes en arabe dans {$file}")
-        ->and(array_values(array_diff($ar, $fr)))->toBe([], "Clés manquantes en français dans {$file}");
-})->with(array_map('basename', glob(__DIR__.'/../../lang/fr/*.php')));
+    expect(array_values(array_diff($fr, $other)))->toBe([], "Clés manquantes en « {$locale} » dans {$file}")
+        ->and(array_values(array_diff($other, $fr)))->toBe([], "Clés en trop en « {$locale} » dans {$file}");
+})->with(array_map('basename', glob(__DIR__.'/../../lang/fr/*.php')))->with(['ar', 'en']);

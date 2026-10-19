@@ -79,6 +79,12 @@ class Group extends Model
         return min($this->room->capacity, (int) config('educoeur.groups.max_students'));
     }
 
+    /** Plus aucune place disponible (élèves actifs). */
+    public function isFull(): bool
+    {
+        return $this->students()->active()->count() >= $this->capacity();
+    }
+
     #[Scope]
     protected function active(Builder $query): void
     {

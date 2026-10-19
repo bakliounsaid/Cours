@@ -26,8 +26,8 @@ it('ouvre chaque espace à son rôle', function () {
     $this->actingAs(Teacher::factory()->create()->user)->get('/enseignant')->assertOk();
 });
 
-it('affiche l’admin en arabe et en RTL selon la langue du compte', function () {
-    $admin = User::factory()->admin()->arabic()->create();
+it('affiche l’admin en arabe et en RTL selon la langue de la session', function () {
+    $admin = User::factory()->admin()->create();
 
     $this->actingAs($admin)
         ->withSession(['locale' => 'ar'])

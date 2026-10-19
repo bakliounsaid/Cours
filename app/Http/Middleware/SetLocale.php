@@ -9,7 +9,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Détermine la langue de la requête :
- * paramètre d'URL (/fr, /ar) > session > préférence du compte > langue par défaut.
+ * paramètre d'URL (/fr, /ar, /en) > session > langue par défaut (français).
+ * La langue n'est jamais enregistrée en base : uniquement dans la session.
  */
 class SetLocale
 {
@@ -19,7 +20,6 @@ class SetLocale
 
         $locale = ($fromUrl instanceof Locale ? $fromUrl : Locale::tryFrom((string) $fromUrl))
             ?? Locale::tryFrom((string) $request->session()->get('locale'))
-            ?? $request->user()?->locale
             ?? Locale::default();
 
         $request->session()->put('locale', $locale->value);

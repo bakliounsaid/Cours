@@ -2,7 +2,6 @@
 
 namespace App\Actions\Teachers;
 
-use App\Enums\Locale;
 use App\Enums\UserRole;
 use App\Models\Teacher;
 use App\Models\User;
@@ -15,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 class SaveTeacher
 {
     /**
-     * @param  array{name: string, email: string, password?: ?string, phone?: ?string, locale: string, rate_per_lesson: int|string, is_active: bool, subject_ids: list<int|string>}  $data
+     * @param  array{name: string, email: string, password?: ?string, phone?: ?string, rate_group: int|string, rate_individual: int|string, is_active: bool, subject_ids: list<int|string>}  $data
      */
     public function handle(array $data, ?Teacher $teacher = null): Teacher
     {
@@ -25,7 +24,6 @@ class SaveTeacher
             $user->fill([
                 'name' => trim($data['name']),
                 'email' => mb_strtolower(trim($data['email'])),
-                'locale' => Locale::from($data['locale']),
             ]);
 
             if (filled($data['password'] ?? null)) {
@@ -38,7 +36,8 @@ class SaveTeacher
             $teacher ??= new Teacher(['user_id' => $user->id]);
             $teacher->fill([
                 'phone' => filled($data['phone'] ?? null) ? Phone::normalize($data['phone']) : null,
-                'rate_per_lesson' => (int) $data['rate_per_lesson'],
+                'rate_group' => (int) $data['rate_group'],
+                'rate_individual' => (int) $data['rate_individual'],
                 'is_active' => (bool) $data['is_active'],
             ])->save();
 

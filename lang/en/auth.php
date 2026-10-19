@@ -1,0 +1,36 @@
+<?php
+
+return [
+    'failed' => 'These credentials do not match any account.',
+    'password' => 'The password is incorrect.',
+    'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
+
+    'inactive' => 'This teacher account is deactivated. Please contact the management.',
+
+    'login_title' => 'Sign in',
+    'login_subtitle' => 'Reserved for the Éducœur team.',
+    'teacher_login_title' => 'Teacher space',
+    'teacher_login_subtitle' => 'Sign in to see your lessons and take attendance.',
+    'email' => 'Email address',
+    'password_label' => 'Password',
+    'remember' => 'Stay signed in',
+    'submit' => 'Sign in',
+    'forgot' => 'Forgot your password?',
+    'logout' => 'Sign out',
+    'back_home' => 'Back to the website',
+    'forgot_title' => 'Forgot password',
+    'forgot_subtitle' => 'Enter your email address: we will send you a link to choose a new password.',
+    'send_link' => 'Send the link',
+    'reset_title' => 'New password',
+    'new_password' => 'New password',
+    'confirm_password' => 'Confirm password',
+    'reset_submit' => 'Save password',
+    'back_to_login' => 'Back to sign in',
+    'reset_mail_subject' => 'Reset your Éducœur password',
+    'reset_mail_line' => 'You are receiving this email because a password reset was requested for your account.',
+    'reset_mail_action' => 'Choose a new password',
+    'reset_mail_expire' => 'This link will expire in :count minutes.',
+    'reset_mail_ignore' => 'If you did not request this, simply ignore this email.',
+    'greeting' => 'Hello :name,',
+    'signature' => 'The Éducœur team',
+];
