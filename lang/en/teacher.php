@@ -28,7 +28,7 @@ return [
         'no_lessons_hint' => 'No lessons scheduled today.',
         'upcoming' => 'Coming days',
         'live' => 'In progress',
-        'starts_in' => 'Starts in :time',
+        'starts_in_prefix' => 'Starts in',
         'ended' => 'Finished',
     ],
 

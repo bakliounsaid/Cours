@@ -21,7 +21,7 @@
     </span>
     <span class="min-w-0">
         <span class="block text-sm font-semibold text-muted">{{ $label }}</span>
-        <span class="block font-display text-xl font-extrabold text-ink sm:text-2xl" @if (is_int($value)) x-data x-count-up="{{ $value }}" @endif>{{ $value }}</span>
+        <span class="block font-display text-xl font-extrabold text-ink sm:text-2xl" @if (is_int($value)) x-data x-init="window.educoeurCountUp?.($el, {{ (int) $value }})" @endif>{{ $value }}</span>
         @if ($hint)
             <span class="block truncate text-xs text-subtle">{{ $hint }}</span>
         @endif

@@ -26,11 +26,7 @@
 
     <div wire:loading.class="opacity-60" wire:target="search,status" class="grid gap-3 transition-opacity sm:grid-cols-2">
         @forelse ($groups as $group)
-            @php
-                $capacity = min($group->room->capacity, (int) config('educoeur.groups.max_students'));
-                $fill = $capacity > 0 ? min(100, round($group->students_count / $capacity * 100)) : 0;
-            @endphp
-            <article wire:key="group-{{ $group->id }}" style="--subject: {{ $group->subject->color }}; animation-delay: {{ min($loop->index * 50, 400) }}ms"
+            <article wire:key="group-{{ $group->id }}" style="--subject: {{ $group->subject->color }}; animation-delay: {{ $loop->index * 50 }}ms"
                      class="animate-fade-up card card-hover relative flex flex-col overflow-hidden">
                 <span class="absolute inset-x-0 top-0 h-1.5 bg-(--subject)"></span>
                 <a href="{{ route('teacher.groups.show', $group) }}" wire:navigate class="block flex-1 p-4 pt-5">
@@ -52,15 +48,19 @@
 
                     <div class="mt-4">
                         <div class="mb-1 flex justify-between text-xs font-semibold">
-                            <span class="text-muted">{{ trans_choice('teacher.students.count', $group->students_count, ['count' => $group->students_count]) }}</span>
-                            <span @class(['text-terra-700' => $fill >= 100, 'text-subtle' => $fill < 100])>{{ $fill >= 100 ? __('teacher.groups.full_short') : __('teacher.groups.places_left', ['count' => $capacity - $group->students_count]) }}</span>
+                            <span class="text-muted">{{ trans_choice('teacher.students.count', $group->activeStudentsCount(), ['count' => $group->activeStudentsCount()]) }}</span>
+                            @if ($group->seatsLeft() === 0)
+                                <span class="text-terra-700">{{ __('teacher.groups.full_short') }}</span>
+                            @else
+                                <span class="text-subtle">{{ trans_choice('teacher.groups.places_left', $group->seatsLeft(), ['count' => $group->seatsLeft()]) }}</span>
+                            @endif
                         </div>
-                        <div class="progress"><span style="width: {{ $fill }}%" @class(['bg-terra-500' => $fill >= 100, 'bg-sage-500' => $fill < 100])></span></div>
+                        <div class="progress"><span style="width: {{ $group->fillPercent() }}%" @class(['bg-terra-500' => $group->seatsLeft() === 0, 'bg-sage-500' => $group->seatsLeft() > 0])></span></div>
                     </div>
                 </a>
 
                 <div class="flex items-center justify-between border-t border-olive-100/70 px-3 py-2">
-                    <p class="text-xs text-subtle">{{ __('teacher.rates.group_value', ['amount' => \App\Support\Format::money($this->teacher->rate_group)]) }}</p>
+                    <p class="text-xs text-subtle">{{ $groupRate }}</p>
                     <div class="flex gap-1">
                         <x-ui.icon-button icon="pencil" :label="__('ui.edit')" wire:click="edit({{ $group->id }})" />
                         @if ($group->is_active)

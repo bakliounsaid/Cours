@@ -1,8 +1,3 @@
-@php
-    use App\Support\Format;
-    use App\Support\Phone;
-@endphp
-
 <div>
     <div class="animate-fade-up mb-5 flex items-end justify-between gap-3">
         <div>
@@ -32,11 +27,10 @@
 
     <ul wire:loading.class="opacity-60" wire:target="search,mode" class="space-y-3 transition-opacity">
         @forelse ($students as $student)
-            @php($next = $nextLessons->get($student->id))
-            <li wire:key="student-{{ $student->id }}" style="animation-delay: {{ min($loop->index * 40, 400) }}ms"
+            <li wire:key="student-{{ $student->id }}" style="animation-delay: {{ $loop->index * 40 }}ms"
                 class="animate-fade-up card card-hover p-4">
                 <div class="flex items-start gap-3">
-                    <span class="avatar size-11 text-base">{{ mb_strtoupper(mb_substr($student->first_name, 0, 1).mb_substr($student->last_name, 0, 1)) }}</span>
+                    <span class="avatar size-11 text-base">{{ $student->initials() }}</span>
                     <div class="min-w-0 flex-1">
                         <p class="truncate font-bold text-ink">{{ $student->full_name }}</p>
                         <p class="truncate text-xs text-subtle">{{ $student->level->name }}</p>
@@ -50,10 +44,10 @@
                                 <span class="badge bg-honey-100 text-honey-700"><x-icon name="user" class="size-3.5" /> {{ __('teacher.students.individual_badge') }}</span>
                             @endif
                         </div>
-                        @if ($next)
+                        @if ($student->nextLesson)
                             <p class="mt-2 flex items-center gap-1 text-xs font-semibold text-terra-700">
                                 <x-icon name="calendar" class="size-3.5" />
-                                {{ __('teacher.students.next_lesson') }} <span class="capitalize">{{ $next->date->translatedFormat('l j F') }}</span> · <span dir="ltr">{{ Format::timeRange($next->starts_at, $next->ends_at) }}</span>
+                                {{ __('teacher.students.next_lesson') }} <span class="capitalize">{{ $student->nextLesson->date->translatedFormat('l j F') }}</span> · <span dir="ltr">{{ $student->nextLesson->starts_at->format('H:i') }} – {{ $student->nextLesson->ends_at->format('H:i') }}</span>
                             </p>
                         @endif
                         @if ($student->notes)
@@ -74,8 +68,8 @@
                             @else
                                 <button type="button" wire:click="startIndividual({{ $student->id }})" x-on:click="menu = false" class="menu-item"><x-icon name="user" class="size-4" /> {{ __('teacher.students.start_individual') }}</button>
                             @endif
-                            <a href="tel:+{{ Phone::international($student->parent_phone) }}" class="menu-item"><x-icon name="phone" class="size-4" /> {{ __('teacher.students.call_parent') }}</a>
-                            <a href="{{ Phone::whatsappUrl($student->parent_phone) }}" target="_blank" rel="noopener" class="menu-item"><x-icon name="whatsapp" class="size-4" /> WhatsApp</a>
+                            <a href="{{ $student->parentPhoneHref() }}" class="menu-item"><x-icon name="phone" class="size-4" /> {{ __('teacher.students.call_parent') }}</a>
+                            <a href="{{ $student->parentWhatsappUrl() }}" target="_blank" rel="noopener" class="menu-item"><x-icon name="whatsapp" class="size-4" /> WhatsApp</a>
                         </div>
                     </div>
                 </div>
@@ -99,16 +93,16 @@
 
     {{-- Programmer un cours individuel --}}
     <x-ui.modal wire:model="showLessonForm" :title="__('teacher.students.plan_lesson')"
-                :description="__('teacher.rates.individual_value', ['amount' => Format::money($this->teacher->rate_individual)])">
+                :description="$this->individualRateLabel">
         <form id="lesson-form" wire:submit="saveLesson" class="space-y-4">
             <x-ui.select wire:model.live="lesson.subject_id" :label="__('admin.lessons.subject')" :options="$subjectOptions" :placeholder="__('ui.choose')" required />
             <div class="grid gap-4 sm:grid-cols-2">
-                <x-ui.input wire:model.live="lesson.date" type="date" :min="today()->toDateString()" :label="__('teacher.students.lesson_date')" required />
+                <x-ui.input wire:model.live="lesson.date" type="date" :min="$today" :label="__('teacher.students.lesson_date')" required />
                 <x-ui.input wire:model.live="lesson.starts_time" type="time" step="900" dir="ltr" :label="__('teacher.students.lesson_time')" required />
             </div>
             <x-ui.field :label="__('teacher.students.lesson_duration')" for="lesson.duration" required>
                 <div class="segmented">
-                    @foreach ([60 => '1 h', 90 => '1 h 30', 120 => '2 h'] as $minutes => $durationLabel)
+                    @foreach ($durationOptions as $minutes => $durationLabel)
                         <button type="button" wire:click="$set('lesson.duration', {{ $minutes }})" aria-selected="{{ (int) $lesson->duration === $minutes ? 'true' : 'false' }}" dir="ltr">{{ $durationLabel }}</button>
                     @endforeach
                 </div>

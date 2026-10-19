@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\LessonStatus;
 use App\Enums\LessonType;
+use App\Support\Format;
 use Carbon\CarbonInterface;
 use Database\Factories\LessonFactory;
 use Illuminate\Database\Eloquent\Attributes\Scope;
@@ -151,6 +152,41 @@ class Lesson extends Model
         }
 
         return $this->students->pluck('full_name')->implode(', ');
+    }
+
+    /**
+     * Nombre d'élèves attendus, à partir des relations déjà chargées
+     * (group.students et students) : aucune requête supplémentaire.
+     */
+    public function expectedStudentsCount(): int
+    {
+        $students = $this->group ? $this->group->students->merge($this->students) : $this->students;
+
+        return $students->unique('id')->count();
+    }
+
+    /** « soon » (à venir), « live » (en cours) ou « done » (terminée). */
+    public function liveState(?CarbonInterface $at = null): string
+    {
+        $at ??= now();
+
+        return match (true) {
+            $this->hasEnded($at) => 'done',
+            $at->greaterThanOrEqualTo($this->starts_at) => 'live',
+            default => 'soon',
+        };
+    }
+
+    /** Minutes avant le début (0 si la séance a commencé). */
+    public function minutesUntilStart(?CarbonInterface $at = null): int
+    {
+        return max(0, (int) ceil(($at ?? now())->diffInSeconds($this->starts_at, false) / 60));
+    }
+
+    /** Temps restant avant le début : « 25 min », « 1 h 05 ». */
+    public function startsInLabel(?CarbonInterface $at = null): string
+    {
+        return Format::minutes($this->minutesUntilStart($at));
     }
 
     public function isCancelled(): bool

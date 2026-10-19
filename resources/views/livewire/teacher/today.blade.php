@@ -1,33 +1,24 @@
-@php use App\Support\Format; @endphp
-
 <div class="space-y-6">
     {{-- Bandeau d'accueil --}}
     <section class="animate-fade-up relative overflow-hidden rounded-card bg-olive-700 p-5 text-white shadow-lift sm:p-6">
         <div class="pointer-events-none absolute -end-10 -top-10 size-40 rounded-full bg-terra-500/30 blur-2xl"></div>
         <div class="pointer-events-none absolute -bottom-12 start-10 size-32 rounded-full bg-honey-400/20 blur-2xl"></div>
 
-        <p class="relative text-sm font-semibold text-olive-100 capitalize">{{ Format::dayDate(now(), withYear: true) }}</p>
-        <h1 class="relative mt-1 text-2xl font-extrabold text-white sm:text-3xl">{{ $greeting }}, {{ str(auth()->user()->name)->before(' ') }} 👋</h1>
-        <p class="relative mt-1 text-olive-100">{{ trans_choice('teacher.today.summary', $today->count(), ['count' => $today->count()]) }}</p>
+        <p class="relative text-sm font-semibold text-olive-100 first-letter:uppercase">{{ $date }}</p>
+        <h1 class="relative mt-1 text-2xl font-extrabold text-white sm:text-3xl">{{ $title }}</h1>
+        <p class="relative mt-1 text-olive-100">{{ $summary }}</p>
 
         <div class="relative mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4">
-            @foreach ([
-                ['groups', 'user-group', $stats['groups'], route('teacher.groups')],
-                ['students', 'users', $stats['students'], route('teacher.students')],
-                ['month_lessons', 'check-circle', $stats['month_lessons'], null],
-                ['earned', 'banknotes', $stats['earned'], null],
-            ] as [$key, $icon, $value, $href])
-                <a @if ($href) href="{{ $href }}" wire:navigate @endif
-                   @class(['group rounded-2xl bg-white/10 p-3 ring-1 ring-white/10 backdrop-blur transition', 'hover:-translate-y-0.5 hover:bg-white/15' => $href])>
+            @foreach ($tiles as $tile)
+                <a @if ($tile['url']) href="{{ $tile['url'] }}" wire:navigate @endif
+                   @class(['rounded-2xl bg-white/10 p-3 ring-1 ring-white/10 backdrop-blur transition', 'hover:-translate-y-0.5 hover:bg-white/15' => $tile['url']])>
                     <span class="flex items-center gap-1.5 text-xs font-semibold text-olive-100">
-                        <x-icon :name="$icon" class="size-4" /> {{ __('teacher.today.stats.'.$key) }}
+                        <x-icon :name="$tile['icon']" class="size-4" /> {{ $tile['label'] }}
                     </span>
                     <span class="mt-1 block font-display text-2xl font-extrabold text-white" dir="ltr">
-                        @if ($key === 'earned')
-                            <span x-data x-count-up="{{ $value }}">{{ number_format($value, 0, ',', ' ') }}</span>
-                            <span class="text-sm font-bold text-olive-100">{{ __('app.currency') }}</span>
-                        @else
-                            <span x-data x-count-up="{{ $value }}">{{ $value }}</span>
+                        <span x-data x-init="window.educoeurCountUp?.($el, {{ $tile['value'] }})">{{ $tile['display'] }}</span>
+                        @if ($tile['unit'])
+                            <span class="text-sm font-bold text-olive-100">{{ $tile['unit'] }}</span>
                         @endif
                     </span>
                 </a>
@@ -79,12 +70,12 @@
         <div class="mt-4 grid gap-3 sm:grid-cols-2">
             <div class="rounded-2xl bg-sage-50 p-4 ring-1 ring-sage-200">
                 <p class="flex items-center gap-1.5 text-sm font-semibold text-sage-700"><x-icon name="user-group" class="size-4" /> {{ __('teacher.rates.group') }}</p>
-                <p class="mt-1 font-display text-2xl font-extrabold text-ink" dir="ltr">{{ Format::money($this->teacher->rate_group) }}</p>
+                <p class="mt-1 font-display text-2xl font-extrabold text-ink" dir="ltr">{{ $rates['group'] }}</p>
                 <p class="text-xs text-subtle">{{ __('teacher.rates.per_lesson') }}</p>
             </div>
             <div class="rounded-2xl bg-honey-100/70 p-4 ring-1 ring-honey-200">
                 <p class="flex items-center gap-1.5 text-sm font-semibold text-honey-700"><x-icon name="user" class="size-4" /> {{ __('teacher.rates.individual') }}</p>
-                <p class="mt-1 font-display text-2xl font-extrabold text-ink" dir="ltr">{{ Format::money($this->teacher->rate_individual) }}</p>
+                <p class="mt-1 font-display text-2xl font-extrabold text-ink" dir="ltr">{{ $rates['individual'] }}</p>
                 <p class="text-xs text-subtle">{{ __('teacher.rates.per_lesson') }}</p>
             </div>
         </div>

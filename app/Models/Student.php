@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\Locale;
+use App\Support\Phone;
 use Database\Factories\StudentFactory;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
@@ -42,6 +43,29 @@ class Student extends Model
     protected function fullName(): Attribute
     {
         return Attribute::get(fn () => trim($this->first_name.' '.$this->last_name));
+    }
+
+    /** « YB » pour Yanis Benali. */
+    public function initials(): string
+    {
+        return mb_strtoupper(mb_substr($this->first_name, 0, 1).mb_substr($this->last_name, 0, 1));
+    }
+
+    /** « 0555 12 34 56 » */
+    public function parentPhoneDisplay(): string
+    {
+        return Phone::format($this->parent_phone);
+    }
+
+    /** Lien d'appel « tel:+213… » */
+    public function parentPhoneHref(): string
+    {
+        return 'tel:+'.Phone::international($this->parent_phone);
+    }
+
+    public function parentWhatsappUrl(): string
+    {
+        return Phone::whatsappUrl($this->parent_phone);
     }
 
     public function level(): BelongsTo

@@ -79,6 +79,23 @@ class Group extends Model
         return min($this->room->capacity, (int) config('educoeur.groups.max_students'));
     }
 
+    /** Élèves actifs : « students_count » s'il a été chargé (withCount), sinon une requête. */
+    public function activeStudentsCount(): int
+    {
+        return (int) ($this->students_count ?? $this->students()->active()->count());
+    }
+
+    public function seatsLeft(): int
+    {
+        return max(0, $this->capacity() - $this->activeStudentsCount());
+    }
+
+    /** Taux de remplissage, de 0 à 100. */
+    public function fillPercent(): int
+    {
+        return $this->capacity() > 0 ? (int) min(100, round($this->activeStudentsCount() / $this->capacity() * 100)) : 0;
+    }
+
     /** Plus aucune place disponible (élèves actifs). */
     public function isFull(): bool
     {

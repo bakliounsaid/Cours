@@ -78,6 +78,7 @@ class Index extends Component
         return view('livewire.teacher.groups.index', [
             'groups' => $groups,
             'archivedCount' => $this->teacher->groups()->where('is_active', false)->count(),
+            'groupRate' => __('teacher.rates.group_value', ['amount' => Format::money($this->teacher->rate_group)]),
             'subjectOptions' => $this->teacher->subjects()->ordered()->get()->pluck('name', 'id')->all(),
             'levelOptions' => Catalog::levels()->pluck('name', 'id')->all(),
             'roomOptions' => Catalog::rooms()->mapWithKeys(fn ($room) => [$room->id => $room->name.' · '.trans_choice('admin.rooms.places', $room->capacity, ['count' => $room->capacity])])->all(),

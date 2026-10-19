@@ -28,7 +28,7 @@ return [
         'no_lessons_hint' => 'Aucune séance prévue aujourd’hui.',
         'upcoming' => 'Prochains jours',
         'live' => 'En cours',
-        'starts_in' => 'Commence dans :time',
+        'starts_in_prefix' => 'Commence dans',
         'ended' => 'Terminée',
     ],
 

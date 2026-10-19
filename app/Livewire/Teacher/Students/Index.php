@@ -4,6 +4,7 @@ namespace App\Livewire\Teacher\Students;
 
 use App\Enums\LessonStatus;
 use App\Enums\LessonType;
+use App\Enums\Locale;
 use App\Livewire\Concerns\WithModalForm;
 use App\Livewire\Forms\IndividualLessonForm;
 use App\Livewire\Forms\StudentForm;
@@ -135,9 +136,13 @@ class Index extends Component
             ->unique(0)
             ->mapWithKeys(fn (array $pair) => [$pair[0] => $pair[1]]);
 
+        $students->getCollection()->each(fn (Student $student) => $student->setRelation('nextLesson', $nextLessons->get($student->id)));
+
         return view('livewire.teacher.students.index', [
             'students' => $students,
-            'nextLessons' => $nextLessons,
+            'localeOptions' => Locale::options(),
+            'today' => today()->toDateString(),
+            'durationOptions' => [60 => '1 h', 90 => '1 h 30', 120 => '2 h'],
             'counts' => [
                 'all' => $teacher->students()->active()->count(),
                 'group' => $teacher->students()->active()->whereHas('groups', fn (Builder $groups) => $groups->where('teacher_id', $teacher->id))->count(),

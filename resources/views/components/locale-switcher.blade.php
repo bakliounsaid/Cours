@@ -1,6 +1,4 @@
-{{-- Choix de la langue (FR / ع / EN) : gardée en session uniquement --}}
-@php($current = \App\Enums\Locale::current())
-
+{{-- Choix de la langue, gardée en session (voir App\View\Components\LocaleSwitcher) --}}
 <div x-data="{ open: false }" x-on:click.outside="open = false" x-on:keydown.escape="open = false" {{ $attributes->merge(['class' => 'relative']) }}>
     <button type="button" x-on:click="open = ! open" :aria-expanded="open" aria-haspopup="menu"
             title="{{ __('app.choose_language') }}"
@@ -16,7 +14,7 @@
          x-transition:leave="transition ease-in duration-100" x-transition:leave-end="opacity-0 scale-95"
          role="menu"
          class="absolute end-0 z-50 mt-2 w-48 origin-top rounded-2xl bg-white p-1.5 shadow-lift ring-1 ring-olive-100">
-        @foreach (\App\Enums\Locale::cases() as $locale)
+        @foreach ($locales as $locale)
             <a href="{{ route('locale.switch', $locale) }}" role="menuitemradio" aria-checked="{{ $locale === $current ? 'true' : 'false' }}"
                hreflang="{{ $locale->value }}" lang="{{ $locale->value }}" dir="{{ $locale->direction() }}"
                @class([

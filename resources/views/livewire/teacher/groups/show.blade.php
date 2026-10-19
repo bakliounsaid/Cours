@@ -1,12 +1,3 @@
-@php
-    use App\Support\Format;
-    use App\Support\Phone;
-
-    $count = $students->count();
-    $fill = $capacity > 0 ? min(100, round($count / $capacity * 100)) : 0;
-    $full = $count >= $capacity;
-@endphp
-
 <div class="space-y-5">
     <a href="{{ route('teacher.groups') }}" wire:navigate class="inline-flex items-center gap-1 text-sm font-semibold text-muted hover:text-terra-700">
         <x-icon name="chevron-left" class="flip-rtl size-4" /> {{ __('teacher.nav.groups') }}
@@ -22,7 +13,7 @@
                     <circle cx="18" cy="18" r="15.5" fill="none" class="stroke-sand-200" stroke-width="3.5" />
                     <circle cx="18" cy="18" r="15.5" fill="none" stroke-width="3.5" stroke-linecap="round"
                             @class(['transition-[stroke-dasharray] duration-700', 'stroke-terra-500' => $full, 'stroke-sage-500' => ! $full])
-                            stroke-dasharray="{{ round($fill * 0.974, 1) }} 97.4" />
+                            stroke-dasharray="{{ $gauge }} 97.4" />
                 </svg>
                 <span class="absolute inset-0 flex flex-col items-center justify-center" dir="ltr">
                     <span class="font-display text-lg leading-none font-extrabold text-ink">{{ $count }}</span>
@@ -50,7 +41,7 @@
                     @foreach ($nextLessons as $lesson)
                         <span class="inline-flex items-center gap-1.5 rounded-full bg-olive-50 px-3 py-1 text-xs font-semibold text-olive-700">
                             <x-icon name="calendar" class="size-3.5" />
-                            <span class="capitalize">{{ $lesson->date->translatedFormat('D j M') }}</span> · <span dir="ltr">{{ Format::time($lesson->starts_at) }}</span>
+                            <span class="capitalize">{{ $lesson->date->translatedFormat('D j M') }}</span> · <span dir="ltr">{{ $lesson->starts_at->format('H:i') }}</span>
                         </span>
                     @endforeach
                 </div>
@@ -59,7 +50,7 @@
     </section>
 
     {{-- Ajouter un élève --}}
-    <section class="animate-fade-up card p-4 [animation-delay:60ms]" aria-labelledby="add-student" x-data="{ open: false }">
+    <section class="animate-fade-up card p-4 [animation-delay:60ms]" aria-labelledby="add-student">
         <div class="flex items-center justify-between gap-2">
             <h2 id="add-student" class="text-lg font-bold">{{ __('teacher.groups.add_students') }}</h2>
             @if ($full)
@@ -79,11 +70,11 @@
                 </button>
             </div>
 
-            @if (mb_strlen(trim($studentSearch)) >= 2)
+            @if ($showSearchResults)
                 <ul class="mt-2 divide-y divide-olive-50 overflow-hidden rounded-2xl ring-1 ring-olive-100" wire:loading.class="opacity-60" wire:target="studentSearch">
                     @forelse ($candidates as $candidate)
                         <li wire:key="candidate-{{ $candidate->id }}" class="flex items-center gap-3 bg-white px-3 py-2.5 transition hover:bg-sand-50">
-                            <span class="avatar">{{ mb_strtoupper(mb_substr($candidate->first_name, 0, 1).mb_substr($candidate->last_name, 0, 1)) }}</span>
+                            <span class="avatar">{{ $candidate->initials() }}</span>
                             <span class="min-w-0 flex-1">
                                 <span class="block truncate font-bold text-ink">{{ $candidate->full_name }}</span>
                                 <span @class(['block truncate text-xs', 'font-semibold text-sage-700' => $candidate->level_id === $group->level_id, 'text-subtle' => $candidate->level_id !== $group->level_id])>{{ $candidate->level->name }}</span>
@@ -110,14 +101,14 @@
         <ul class="card divide-y divide-olive-50 overflow-hidden">
             @forelse ($students as $student)
                 <li wire:key="student-{{ $student->id }}" class="flex items-center gap-3 px-4 py-3 transition hover:bg-sand-50">
-                    <span class="avatar">{{ mb_strtoupper(mb_substr($student->first_name, 0, 1).mb_substr($student->last_name, 0, 1)) }}</span>
+                    <span class="avatar">{{ $student->initials() }}</span>
                     <span class="min-w-0 flex-1">
                         <span class="block truncate font-bold text-ink">{{ $student->full_name }}</span>
                         <span class="block truncate text-xs text-subtle">
-                            {{ $student->level->name }} · <span dir="ltr">{{ Phone::format($student->parent_phone) }}</span>
+                            {{ $student->level->name }} · <span dir="ltr">{{ $student->parentPhoneDisplay() }}</span>
                         </span>
                     </span>
-                    <a href="tel:+{{ Phone::international($student->parent_phone) }}" class="hidden size-9 items-center justify-center rounded-full text-muted transition hover:bg-sand-200 hover:text-ink sm:inline-flex" title="{{ __('teacher.students.call_parent') }}">
+                    <a href="{{ $student->parentPhoneHref() }}" class="hidden size-9 items-center justify-center rounded-full text-muted transition hover:bg-sand-200 hover:text-ink sm:inline-flex" title="{{ __('teacher.students.call_parent') }}">
                         <x-icon name="phone" class="size-[18px]" /><span class="sr-only">{{ __('teacher.students.call_parent') }}</span>
                     </a>
                     <x-ui.icon-button icon="pencil" :label="__('ui.edit')" wire:click="edit({{ $student->id }})" />

@@ -15,7 +15,7 @@
 
         <div class="grid gap-4 sm:grid-cols-2">
             <x-ui.input wire:model.live.blur="form.parent_phone" type="tel" dir="ltr" :label="__('teacher.students.parent_phone')" placeholder="0555 12 34 56" required />
-            <x-ui.select wire:model="form.parent_locale" :label="__('teacher.students.parent_locale')" :options="\App\Enums\Locale::options()" required />
+            <x-ui.select wire:model="form.parent_locale" :label="__('teacher.students.parent_locale')" :options="$localeOptions" required />
         </div>
 
         @if (! $form->isEditing() && $groupOptions !== null)
@@ -25,7 +25,7 @@
                 </legend>
                 <x-ui.select wire:model.live="form.group_id" :label="__('teacher.students.join_group')" :options="$groupOptions" :placeholder="__('teacher.students.no_group')" />
                 <x-ui.toggle wire:model.live="form.individual" :label="__('teacher.students.individual')"
-                             :hint="__('teacher.rates.individual_value', ['amount' => \App\Support\Format::money($this->teacher->rate_individual)])" />
+                             :hint="$this->individualRateLabel" />
             </fieldset>
         @endif
 

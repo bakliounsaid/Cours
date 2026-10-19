@@ -28,7 +28,7 @@ return [
         'no_lessons_hint' => 'لا توجد أي حصة مبرمجة اليوم.',
         'upcoming' => 'الأيام القادمة',
         'live' => 'جارية الآن',
-        'starts_in' => 'تبدأ بعد :time',
+        'starts_in_prefix' => 'تبدأ بعد',
         'ended' => 'انتهت',
     ],
 

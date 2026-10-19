@@ -4,6 +4,7 @@ namespace App\Livewire\Teacher\Groups;
 
 use App\Actions\Groups\AddStudentToGroup;
 use App\Enums\LessonStatus;
+use App\Enums\Locale;
 use App\Livewire\Concerns\WithModalForm;
 use App\Livewire\Forms\StudentForm;
 use App\Livewire\Teacher\Concerns\ForCurrentTeacher;
@@ -109,10 +110,17 @@ class Show extends Component
                 ->get()
             : collect();
 
+        $capacity = $this->group->capacity();
+
         return view('livewire.teacher.groups.show', [
             'students' => $students,
             'candidates' => $candidates,
-            'capacity' => $this->group->capacity(),
+            'count' => $students->count(),
+            'capacity' => $capacity,
+            'full' => $students->count() >= $capacity,
+            // Jauge circulaire : longueur du trait sur une circonférence de 97,4 (r = 15,5)
+            'gauge' => $capacity > 0 ? round(min(1, $students->count() / $capacity) * 97.4, 1) : 0,
+            'showSearchResults' => mb_strlen($term) >= 2,
             'nextLessons' => $this->group->lessons()
                 ->with('room')
                 ->where('starts_at', '>=', now())
@@ -121,6 +129,7 @@ class Show extends Component
                 ->limit(3)
                 ->get(),
             'levelOptions' => Catalog::levels()->pluck('name', 'id')->all(),
+            'localeOptions' => Locale::options(),
         ])->title($this->group->name);
     }
 }

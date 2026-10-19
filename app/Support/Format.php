@@ -59,6 +59,14 @@ class Format
         return Carbon::now()->startOfWeek(CarbonInterface::SUNDAY)->addDays($dayOfWeek)->translatedFormat('l');
     }
 
+    /** Durée : « 25 min », « 1 h 05 » */
+    public static function minutes(int $minutes): string
+    {
+        return $minutes >= 60
+            ? intdiv($minutes, 60).' h '.str_pad((string) ($minutes % 60), 2, '0', STR_PAD_LEFT)
+            : $minutes.' min';
+    }
+
     /** « 2 500 DA » / « 2 500 دج » */
     public static function money(int|float|null $amount): string
     {
