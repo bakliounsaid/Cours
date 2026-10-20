@@ -11,7 +11,6 @@ it('affiche toutes les sections en français', function () {
         ->assertOk()
         ->assertSee('Chaque enfant mérite qu’on croie en lui')
         ->assertSeeInOrder(['Pourquoi Éducœur', 'Mathématiques', 'Physique', 'Arabe', 'Français', 'Anglais', 'Primaire', 'CEM', 'Cours en groupe', 'Cours individuels'])
-        ->assertSee('Cité Ighil Taourga, Boumerdès')
         ->assertSee(route('teacher.login'));
 });
 
@@ -95,4 +94,8 @@ it('affiche la page anglaise sans texte français ni arabe dans le hero', functi
         ->assertSee('Teaching from the heart')
         ->assertDontSee('Enseigner avec cœur')
         ->assertDontSee('نُعلّم بقلب');
+});
+
+it('ne mentionne le lieu nulle part dans le code de la page, même pour les moteurs de recherche', function () {
+    $this->get('/fr')->assertOk()->assertDontSee('Ighil')->assertDontSee('Boumerdès');
 });

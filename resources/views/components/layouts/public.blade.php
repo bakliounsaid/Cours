@@ -41,12 +41,6 @@
                 'logo' => asset('images/brand/logo-icon.svg'),
                 'telephone' => $settings->get('contact.phone'),
                 'email' => $settings->get('contact.email'),
-                'address' => [
-                    '@type' => 'PostalAddress',
-                    'streetAddress' => $settings->text('contact.address', 'fr'),
-                    'addressLocality' => 'Boumerdès',
-                    'addressCountry' => 'DZ',
-                ],
                 'geo' => [
                     '@type' => 'GeoCoordinates',
                     'latitude' => $settings->get('contact.latitude'),
