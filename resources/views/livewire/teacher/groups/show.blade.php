@@ -107,6 +107,9 @@
                         <span class="block truncate text-xs text-subtle">
                             {{ $student->level->name }} · <span dir="ltr">{{ $student->parentPhoneDisplay() }}</span>
                         </span>
+                        @if ($balances[$student->id]->alert())
+                            <span class="badge mt-1 {{ $balances[$student->id]->status()->badgeClasses() }}"><x-icon name="banknotes" class="size-3.5" /> {{ $balances[$student->id]->alert() }}</span>
+                        @endif
                     </span>
                     <a href="{{ $student->parentPhoneHref() }}" class="hidden size-9 items-center justify-center rounded-full text-muted transition hover:bg-sand-200 hover:text-ink sm:inline-flex" title="{{ __('teacher.students.call_parent') }}">
                         <x-icon name="phone" class="size-[18px]" /><span class="sr-only">{{ __('teacher.students.call_parent') }}</span>
@@ -121,6 +124,37 @@
                     <p class="font-bold text-olive-700">{{ __('teacher.groups.no_students') }}</p>
                     <p class="text-sm text-subtle">{{ __('teacher.groups.no_students_hint') }}</p>
                 </li>
+            @endforelse
+        </ul>
+    </section>
+
+    {{-- Historique des séances --}}
+    <section class="animate-fade-up [animation-delay:180ms]" aria-labelledby="lessons-history">
+        <h2 id="lessons-history" class="mb-3 text-lg font-bold">{{ __('teacher.lessons.group_history') }}</h2>
+
+        <ul class="card divide-y divide-olive-50 overflow-hidden">
+            @forelse ($history as $item)
+                <li>
+                    <a @if ($item['url']) href="{{ $item['url'] }}" wire:navigate @endif
+                       @class(['flex items-start gap-3 px-4 py-3', 'transition hover:bg-sand-50' => $item['url']])>
+                        <span class="min-w-0 flex-1">
+                            <span class="flex flex-wrap items-center gap-2">
+                                <span class="font-bold text-ink first-letter:uppercase">{{ $item['date'] }}</span>
+                                <span class="text-xs text-subtle" dir="ltr">{{ $item['time'] }}</span>
+                                <span class="badge {{ $item['statusClasses'] }}">{{ $item['status'] }}</span>
+                            </span>
+                            @if ($item['presence'])
+                                <span class="mt-0.5 block text-xs font-semibold text-sage-700">{{ $item['presence'] }}</span>
+                            @endif
+                            <span class="mt-1 block text-sm text-muted">{{ $item['summary'] ?? __('teacher.lessons.no_summary') }}</span>
+                        </span>
+                        @if ($item['url'])
+                            <x-icon name="chevron-right" class="flip-rtl mt-1 size-4 text-subtle" />
+                        @endif
+                    </a>
+                </li>
+            @empty
+                <li class="p-6 text-center text-sm text-subtle">{{ __('teacher.lessons.no_past_lessons') }}</li>
             @endforelse
         </ul>
     </section>

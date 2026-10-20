@@ -5,7 +5,9 @@ namespace App\Livewire\Teacher;
 use App\Enums\LessonStatus;
 use App\Livewire\Teacher\Concerns\ForCurrentTeacher;
 use App\Models\Lesson;
+use App\Services\LessonCounter;
 use App\Support\Format;
+use App\Support\LessonBalance;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Layout;
@@ -24,7 +26,7 @@ class Today extends Component
         $teacher = $this->teacher;
 
         $lessons = $teacher->lessons()
-            ->with(['group.students' => fn ($query) => $query->active(), 'subject', 'room', 'students'])
+            ->with(['group.students' => fn ($query) => $query->active(), 'subject', 'room', 'students', 'checkin'])
             ->whereBetween('starts_at', [today(), today()->addDays(7)->endOfDay()])
             ->notCancelled()
             ->chronological()
@@ -45,11 +47,21 @@ class Today extends Component
             'date' => Format::dayDate(now(), withYear: true),
             'summary' => trans_choice('teacher.today.summary', $today->count(), ['count' => $today->count()]),
             'tiles' => $this->tiles(),
+            'paymentAlert' => $this->paymentAlert(),
             'rates' => [
                 'group' => Format::money($teacher->rate_group),
                 'individual' => Format::money($teacher->rate_individual),
             ],
         ])->title(__('teacher.nav.today'));
+    }
+
+    /** « 3 élèves ont atteint leur cycle de séances » (null si personne). */
+    private function paymentAlert(): ?string
+    {
+        $balances = app(LessonCounter::class)->forTeacher($this->teacher, $this->teacher->students()->active()->pluck('students.id'));
+        $count = count(array_filter($balances, fn (LessonBalance $balance) => $balance->status()->needsAttention()));
+
+        return $count > 0 ? trans_choice('teacher.payments.dashboard_alert', $count, ['count' => $count]) : null;
     }
 
     /**

@@ -90,6 +90,7 @@
 
             <div class="grid gap-4 sm:grid-cols-2">
                 <x-ui.select wire:model.live="form.subject_id" :label="__('admin.lessons.subject')" :options="$subjectOptions" :placeholder="__('ui.choose')" required />
+                <x-ui.select wire:model.live="form.teacher_id" :label="__('teacher.groups.teacher')" :options="$teacherOptions" :hint="$assignHint" required />
                 <x-ui.select wire:model.live="form.level_id" :label="__('teacher.students.level')" :options="$levelOptions" :placeholder="__('ui.choose')" required />
                 <x-ui.select wire:model.live="form.room_id" :label="__('admin.lessons.room')" :options="$roomOptions" :placeholder="__('ui.choose')" required />
                 <x-ui.input wire:model.live="form.starts_on" type="date" :label="__('teacher.groups.starts_on')" required />

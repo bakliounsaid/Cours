@@ -26,6 +26,16 @@
         </div>
     </section>
 
+    {{-- Paiements à demander --}}
+    @if ($paymentAlert)
+        <a href="{{ route('teacher.students', ['suivi' => 'payment']) }}" wire:navigate
+           class="animate-fade-up card-hover flex items-center gap-3 rounded-2xl bg-terra-50 p-4 text-sm font-bold text-terra-700 ring-1 ring-terra-200 [animation-delay:40ms]" role="status">
+            <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-white"><x-icon name="banknotes" /></span>
+            <span class="flex-1">{{ $paymentAlert }}</span>
+            <x-icon name="chevron-right" class="flip-rtl size-4" />
+        </a>
+    @endif
+
     {{-- Raccourcis --}}
     <section class="animate-fade-up grid grid-cols-2 gap-3 [animation-delay:80ms]">
         <a href="{{ route('teacher.groups', ['nouveau' => 1]) }}" wire:navigate class="card card-hover flex items-center gap-3 p-4">

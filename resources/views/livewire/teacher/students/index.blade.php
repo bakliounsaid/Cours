@@ -16,7 +16,7 @@
             <input type="search" wire:model.live.debounce.300ms="search" placeholder="{{ __('teacher.students.search') }}" class="input ps-11">
         </label>
         <div class="segmented" role="tablist">
-            @foreach (['all', 'group', 'individual'] as $value)
+            @foreach ($filters as $value)
                 <button type="button" role="tab" wire:click="$set('mode', '{{ $value }}')" aria-selected="{{ $mode === $value ? 'true' : 'false' }}">
                     {{ __('teacher.students.filters.'.$value) }}
                     <span class="rounded-full bg-sand-200 px-1.5 text-[11px] text-muted">{{ $counts[$value] }}</span>
@@ -50,6 +50,19 @@
                                 {{ __('teacher.students.next_lesson') }} <span class="capitalize">{{ $student->nextLesson->date->translatedFormat('l j F') }}</span> · <span dir="ltr">{{ $student->nextLesson->starts_at->format('H:i') }} – {{ $student->nextLesson->ends_at->format('H:i') }}</span>
                             </p>
                         @endif
+                        {{-- Séances du cycle en cours chez moi --}}
+                        <div class="mt-3 max-w-xs">
+                            <div class="mb-1 flex items-center justify-between gap-2 text-xs font-semibold">
+                                <span class="text-muted">{{ __('teacher.payments.sessions') }}</span>
+                                <span class="text-ink" dir="ltr">{{ $balances[$student->id]->progressLabel() }}</span>
+                            </div>
+                            <div class="progress"><span style="width: {{ $balances[$student->id]->progressPercent() }}%" class="{{ $balances[$student->id]->status()->progressClasses() }}"></span></div>
+                            @if ($balances[$student->id]->alert())
+                                <p class="badge mt-2 {{ $balances[$student->id]->status()->badgeClasses() }}">
+                                    <x-icon name="banknotes" class="size-3.5" /> {{ $balances[$student->id]->alert() }}
+                                </p>
+                            @endif
+                        </div>
                         @if ($student->notes)
                             <p class="mt-2 line-clamp-2 text-xs text-muted">{{ $student->notes }}</p>
                         @endif
@@ -62,6 +75,7 @@
                         </button>
                         <div x-show="menu" x-transition.origin.top.right x-cloak class="absolute end-0 z-20 mt-1 w-60 rounded-2xl bg-white p-1.5 shadow-lift ring-1 ring-olive-100">
                             <button type="button" wire:click="edit({{ $student->id }})" x-on:click="menu = false" class="menu-item"><x-icon name="pencil" class="size-4" /> {{ __('ui.edit') }}</button>
+                            <button type="button" wire:click="recordPayment({{ $student->id }})" x-on:click="menu = false" class="menu-item"><x-icon name="banknotes" class="size-4" /> {{ __('teacher.payments.record') }}</button>
                             @if ($student->is_individual)
                                 <button type="button" wire:click="planLesson({{ $student->id }})" x-on:click="menu = false" class="menu-item"><x-icon name="calendar-days" class="size-4" /> {{ __('teacher.students.plan_lesson') }}</button>
                                 <button type="button" x-on:click="menu = false; $dispatch('confirm', { title: {{ Js::from(__('teacher.students.stop_individual')) }}, message: {{ Js::from(__('teacher.students.stop_individual_message', ['name' => $student->full_name])) }}, onConfirm: () => $wire.stopIndividual({{ $student->id }}) })" class="menu-item text-red-600"><x-icon name="x-circle" class="size-4" /> {{ __('teacher.students.stop_individual') }}</button>
@@ -90,6 +104,25 @@
     @endif
 
     @include('livewire.teacher.partials.student-form', ['groupOptions' => $groupOptions])
+
+    {{-- Paiement reçu : remet le compteur de séances à zéro --}}
+    <x-ui.modal wire:model="showPaymentForm" :title="__('teacher.payments.record')" :description="__('teacher.payments.record_hint')">
+        <form id="payment-form" wire:submit="savePayment" class="space-y-4">
+            <div class="grid gap-4 sm:grid-cols-2">
+                <x-ui.input wire:model.live.blur="payment.amount" type="number" min="1" step="100" dir="ltr" :label="__('teacher.payments.amount')" required />
+                <x-ui.input wire:model.live.blur="payment.lessons_covered" type="number" min="1" max="50" dir="ltr" :label="__('teacher.payments.lessons_covered')" required />
+            </div>
+            <x-ui.select wire:model="payment.method" :label="__('teacher.payments.method')" :options="$methodOptions" required />
+            <x-ui.textarea wire:model.live.blur="payment.notes" :label="__('teacher.students.notes')" rows="2" />
+        </form>
+
+        <x-slot:footer>
+            <button type="button" class="btn-ghost" x-on:click="open = false">{{ __('ui.cancel') }}</button>
+            <button type="submit" form="payment-form" class="btn-primary" wire:loading.attr="disabled" wire:target="savePayment">
+                <span wire:loading wire:target="savePayment" class="spinner"></span> {{ __('ui.save') }}
+            </button>
+        </x-slot:footer>
+    </x-ui.modal>
 
     {{-- Programmer un cours individuel --}}
     <x-ui.modal wire:model="showLessonForm" :title="__('teacher.students.plan_lesson')"

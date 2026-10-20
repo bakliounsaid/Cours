@@ -61,6 +61,11 @@ return [
         'lesson_added' => 'Lesson added',
         'payment_reminder' => 'Payment reminder',
     ],
+    'lesson_event_type' => [
+        'checked_in' => 'Attendance validated and check-in',
+        'attendance_updated' => 'Attendance corrected',
+        'work_recorded' => 'Work done recorded',
+    ],
     'locale' => [
         'fr' => 'French',
         'ar' => 'Arabic',

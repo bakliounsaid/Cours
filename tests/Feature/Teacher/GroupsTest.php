@@ -148,3 +148,43 @@ it('crée un nouvel élève directement dans le groupe', function () {
     expect($student->parent_phone)->toBe('0661234567')
         ->and($group->students()->whereKey($student->id)->exists())->toBeTrue();
 });
+
+it('attribue le groupe à son créateur par défaut', function () {
+    Livewire::test(Index::class)
+        ->call('create')
+        ->assertSet('form.teacher_id', (string) $this->teacher->id);
+});
+
+it('confie le groupe et ses séances à un collègue de la même matière', function () {
+    $colleague = Teacher::factory()->create();
+    $colleague->subjects()->attach($this->maths);
+
+    Livewire::test(Index::class)
+        ->call('create')
+        ->set('form.name', 'Maths 3AM')
+        ->set('form.level_id', (string) $this->level->id)
+        ->set('form.room_id', (string) $this->room->id)
+        ->set('form.time_slot_ids', [(string) $this->sunday->id])
+        ->set('form.teacher_id', (string) $colleague->id)
+        ->call('save')
+        ->assertHasNoErrors()
+        ->assertDispatched('toast', type: 'success');
+
+    $group = Group::query()->where('name', 'Maths 3AM')->sole();
+
+    expect($group->teacher_id)->toBe($colleague->id)
+        ->and($group->lessons()->pluck('teacher_id')->unique()->all())->toBe([$colleague->id]);
+
+    // Le groupe ne fait plus partie de mes groupes
+    Livewire::test(Index::class)->assertDontSee('Maths 3AM');
+});
+
+it('refuse de confier le groupe à un enseignant d’une autre matière', function () {
+    $other = Teacher::factory()->create();
+
+    Livewire::test(Index::class)
+        ->call('create')
+        ->set('form.teacher_id', (string) $other->id)
+        ->call('save')
+        ->assertHasErrors('form.teacher_id');
+});

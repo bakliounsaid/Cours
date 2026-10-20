@@ -40,6 +40,19 @@ class Index extends Component
         }
     }
 
+    /**
+     * Un groupe confié à un collègue quitte la liste : on le dit clairement.
+     */
+    public function save(): void
+    {
+        $group = $this->form->save()->load('teacher.user');
+
+        $this->showForm = false;
+        $this->dispatch('toast', type: 'success', message: $group->teacher_id === $this->teacher->id
+            ? __('ui.saved')
+            : __('teacher.groups.assigned', ['name' => $group->name, 'teacher' => $group->teacher->name]));
+    }
+
     public function archive(int $id): void
     {
         app(SaveGroup::class)->setActive($this->findModel($id), false);
@@ -80,6 +93,8 @@ class Index extends Component
             'archivedCount' => $this->teacher->groups()->where('is_active', false)->count(),
             'groupRate' => __('teacher.rates.group_value', ['amount' => Format::money($this->teacher->rate_group)]),
             'subjectOptions' => $this->teacher->subjects()->ordered()->get()->pluck('name', 'id')->all(),
+            'teacherOptions' => $this->showForm ? $this->form->teacherOptions()->all() : [],
+            'assignHint' => $this->form->isForColleague() ? __('teacher.groups.assign_colleague_hint') : __('teacher.groups.assign_hint'),
             'levelOptions' => Catalog::levels()->pluck('name', 'id')->all(),
             'roomOptions' => Catalog::rooms()->mapWithKeys(fn ($room) => [$room->id => $room->name.' · '.trans_choice('admin.rooms.places', $room->capacity, ['count' => $room->capacity])])->all(),
             'slotsByDay' => Catalog::activeTimeSlots()->groupBy('day_of_week')->map(fn ($slots, $day) => [

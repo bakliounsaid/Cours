@@ -28,6 +28,9 @@ return new class extends Migration
             $table->string('status', 20)->default('scheduled');
             $table->string('title', 120)->nullable();
             $table->text('cancel_reason')->nullable();
+            // Travail réalisé pendant la séance et devoirs donnés (traçabilité pédagogique)
+            $table->text('summary')->nullable();
+            $table->text('homework')->nullable();
             $table->boolean('missing_attendance_alerted')->default(false);
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();

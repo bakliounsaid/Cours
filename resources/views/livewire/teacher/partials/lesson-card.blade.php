@@ -42,11 +42,20 @@
                 </span>
             </p>
         @endif
+
+        {{-- Appel / pointage --}}
+        @if ($lesson->isCheckedIn())
+            <p class="mt-2 inline-flex items-center gap-1 text-xs font-bold text-emerald-700">
+                <x-icon name="clipboard-check" class="size-4" /> {{ __('teacher.lessons.checked_in_at', ['time' => $lesson->checkin->checked_at->format('H:i')]) }}
+            </p>
+        @elseif ($lesson->canTakeAttendance())
+            <a href="{{ route('teacher.lessons.show', $lesson) }}" wire:navigate class="btn-primary btn-sm mt-2">
+                <x-icon name="clipboard-check" class="size-4" /> {{ __('teacher.lessons.take_attendance') }}
+            </a>
+        @endif
     </div>
 
-    @if ($lesson->group)
-        <a href="{{ route('teacher.groups.show', $lesson->group) }}" wire:navigate class="self-center rounded-full p-2 text-subtle transition hover:bg-sand-200 hover:text-olive-700" title="{{ __('teacher.groups.open') }}">
-            <x-icon name="chevron-right" class="flip-rtl" /><span class="sr-only">{{ __('teacher.groups.open') }}</span>
-        </a>
-    @endif
+    <a href="{{ route('teacher.lessons.show', $lesson) }}" wire:navigate class="self-center rounded-full p-2 text-subtle transition hover:bg-sand-200 hover:text-olive-700" title="{{ __('teacher.lessons.open') }}">
+        <x-icon name="chevron-right" class="flip-rtl" /><span class="sr-only">{{ __('teacher.lessons.open') }}</span>
+    </a>
 </article>

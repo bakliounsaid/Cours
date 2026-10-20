@@ -6,7 +6,6 @@ use App\Actions\Lessons\GenerateGroupLessons;
 use App\Enums\LessonStatus;
 use App\Enums\LessonType;
 use App\Models\Group;
-use App\Models\Teacher;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -19,11 +18,13 @@ class SaveGroup
     public function __construct(private readonly GenerateGroupLessons $generator) {}
 
     /**
-     * @param  array{name: string, subject_id: int|string, level_id: int|string, room_id: int|string, time_slot_ids: list<int|string>, starts_on: string, is_active: bool}  $data
+     * Le groupe est confié à l'enseignant de $data['teacher_id'] (par défaut celui qui le crée).
+     *
+     * @param  array{name: string, teacher_id: int|string, subject_id: int|string, level_id: int|string, room_id: int|string, time_slot_ids: list<int|string>, starts_on: string, is_active: bool}  $data
      */
-    public function handle(Teacher $teacher, array $data, ?Group $group = null): Group
+    public function handle(array $data, ?Group $group = null): Group
     {
-        return DB::transaction(function () use ($teacher, $data, $group) {
+        return DB::transaction(function () use ($data, $group) {
             $group ??= new Group;
 
             $group->fill([
@@ -34,7 +35,7 @@ class SaveGroup
                 'starts_on' => $data['starts_on'],
                 'is_active' => (bool) $data['is_active'],
             ]);
-            $group->teacher_id = $teacher->id;
+            $group->teacher_id = (int) $data['teacher_id'];
 
             $isNew = ! $group->exists;
             $group->save();
@@ -42,7 +43,7 @@ class SaveGroup
             $changes = $group->timeSlots()->sync(array_map('intval', $data['time_slot_ids']));
             $slotsChanged = $changes['attached'] !== [] || $changes['detached'] !== [];
 
-            if ($isNew || $slotsChanged || $group->wasChanged(['room_id', 'subject_id', 'starts_on', 'is_active'])) {
+            if ($isNew || $slotsChanged || $group->wasChanged(['teacher_id', 'room_id', 'subject_id', 'starts_on', 'is_active'])) {
                 $this->refreshUpcomingLessons($group);
             }
 

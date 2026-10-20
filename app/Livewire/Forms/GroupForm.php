@@ -9,6 +9,7 @@ use App\Models\Teacher;
 use App\Services\ConflictChecker;
 use Closure;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use Illuminate\Validation\Rule;
 
 /**
@@ -17,6 +18,9 @@ use Illuminate\Validation\Rule;
 class GroupForm extends ModelForm
 {
     public string $name = '';
+
+    /** Enseignant à qui le groupe est confié : celui qui le crée, sauf choix contraire. */
+    public string $teacher_id = '';
 
     public string $subject_id = '';
 
@@ -41,6 +45,7 @@ class GroupForm extends ModelForm
         return [
             'name' => ['required', 'string', 'min:2', 'max:80'],
             'subject_id' => ['required', Rule::in($teacher->subjects()->pluck('subjects.id')->map(fn ($id) => (string) $id)->all())],
+            'teacher_id' => ['required', Rule::in($this->teacherOptions()->keys()->map(fn ($id) => (string) $id)->all())],
             'level_id' => ['required', Rule::exists('levels', 'id')],
             'room_id' => ['required', Rule::exists('rooms', 'id'), $this->roomFitsStudents(...)],
             'time_slot_ids' => ['required', 'array', 'min:1', $this->slotsAreFree(...)],
@@ -57,6 +62,7 @@ class GroupForm extends ModelForm
     {
         $this->editingId = $model->id;
         $this->name = $model->name;
+        $this->teacher_id = (string) $model->teacher_id;
         $this->subject_id = (string) $model->subject_id;
         $this->level_id = (string) $model->level_id;
         $this->room_id = (string) $model->room_id;
@@ -70,6 +76,7 @@ class GroupForm extends ModelForm
         parent::resetForm();
 
         $this->starts_on = today()->toDateString();
+        $this->teacher_id = (string) $this->teacher()->id;
 
         // Une seule matière enseignée : pré-sélectionnée
         $subjects = $this->teacher()->subjects()->pluck('subjects.id');
@@ -82,7 +89,34 @@ class GroupForm extends ModelForm
 
         $group = $this->editingId ? $this->teacher()->groups()->findOrFail($this->editingId) : null;
 
-        return app(SaveGroup::class)->handle($this->teacher(), $data, $group);
+        return app(SaveGroup::class)->handle($data, $group);
+    }
+
+    /**
+     * Enseignants actifs de la matière choisie (l'enseignant connecté toujours en premier).
+     *
+     * @return Collection<int, string>
+     */
+    public function teacherOptions(): Collection
+    {
+        $me = $this->teacher();
+
+        $colleagues = Teacher::query()
+            ->active()
+            ->whereKeyNot($me->id)
+            ->when($this->subject_id !== '', fn ($query) => $query->whereHas('subjects', fn ($subjects) => $subjects->whereKey($this->subject_id)))
+            ->with('user')
+            ->get()
+            ->sortBy('name')
+            ->mapWithKeys(fn (Teacher $teacher) => [$teacher->id => $teacher->name]);
+
+        return collect([$me->id => __('teacher.groups.me', ['name' => $me->name])])->union($colleagues);
+    }
+
+    /** Le groupe sera confié à un collègue. */
+    public function isForColleague(): bool
+    {
+        return $this->teacher_id !== '' && (int) $this->teacher_id !== $this->teacher()->id;
     }
 
     private function teacher(): Teacher
@@ -119,12 +153,14 @@ class GroupForm extends ModelForm
         $conflict = app(ConflictChecker::class)->groupSlotConflict(
             array_map('intval', $value),
             (int) $this->room_id,
-            $this->teacher()->id,
+            (int) ($this->teacher_id ?: $this->teacher()->id),
             $this->editingId,
         );
 
         if ($conflict) {
-            $fail(__('teacher.groups.slot_taken_'.$conflict['reason'], [
+            $reason = $conflict['reason'] === 'teacher' && $this->isForColleague() ? 'colleague' : $conflict['reason'];
+
+            $fail(__('teacher.groups.slot_taken_'.$reason, [
                 'slot' => $conflict['slot']->label(),
                 'group' => $conflict['group']->name,
             ]));

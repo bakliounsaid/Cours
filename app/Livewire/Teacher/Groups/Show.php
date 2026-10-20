@@ -3,17 +3,23 @@
 namespace App\Livewire\Teacher\Groups;
 
 use App\Actions\Groups\AddStudentToGroup;
+use App\Enums\AttendanceStatus;
 use App\Enums\LessonStatus;
 use App\Enums\Locale;
 use App\Livewire\Concerns\WithModalForm;
 use App\Livewire\Forms\StudentForm;
 use App\Livewire\Teacher\Concerns\ForCurrentTeacher;
 use App\Models\Group;
+use App\Models\Lesson;
 use App\Models\Student;
+use App\Services\LessonCounter;
 use App\Support\Catalog;
+use App\Support\Format;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Locked;
@@ -92,6 +98,37 @@ class Show extends Component
         abort(403);
     }
 
+    /**
+     * Historique des séances passées du groupe : présences et travail réalisé.
+     *
+     * @return Collection<int, array{date: string, time: string, status: string, statusClasses: string, presence: ?string, summary: ?string, url: ?string}>
+     */
+    private function history(): Collection
+    {
+        return $this->group->lessons()
+            ->with('checkin')
+            ->withCount([
+                'attendances',
+                'attendances as present_count' => fn (Builder $query) => $query->whereIn('status', [AttendanceStatus::Present, AttendanceStatus::Late]),
+            ])
+            ->where('starts_at', '<', now())
+            ->orderByDesc('starts_at')
+            ->limit(10)
+            ->get()
+            ->map(fn (Lesson $lesson) => [
+                'date' => Format::dayDate($lesson->date),
+                'time' => Format::timeRange($lesson->starts_at, $lesson->ends_at),
+                'status' => $lesson->status->label(),
+                'statusClasses' => $lesson->status->badgeClasses(),
+                'presence' => $lesson->attendances_count > 0
+                    ? __('teacher.lessons.presence', ['present' => $lesson->present_count, 'total' => $lesson->attendances_count])
+                    : null,
+                'summary' => $lesson->summary ? Str::limit($lesson->summary, 140) : null,
+                // Une séance confiée à un autre enseignant reste visible, sans accès à sa fiche.
+                'url' => $lesson->teacher_id === $this->teacher->id ? route('teacher.lessons.show', $lesson) : null,
+            ]);
+    }
+
     public function render(): View
     {
         $this->group->load(['subject', 'level', 'room', 'timeSlots' => fn ($query) => $query->ordered()]);
@@ -114,6 +151,7 @@ class Show extends Component
 
         return view('livewire.teacher.groups.show', [
             'students' => $students,
+            'balances' => app(LessonCounter::class)->forTeacher($this->teacher, $students->pluck('id')),
             'candidates' => $candidates,
             'count' => $students->count(),
             'capacity' => $capacity,
@@ -128,6 +166,7 @@ class Show extends Component
                 ->chronological()
                 ->limit(3)
                 ->get(),
+            'history' => $this->history(),
             'levelOptions' => Catalog::levels()->pluck('name', 'id')->all(),
             'localeOptions' => Locale::options(),
         ])->title($this->group->name);

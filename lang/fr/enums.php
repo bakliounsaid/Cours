@@ -61,6 +61,11 @@ return [
         'lesson_added' => 'Séance ajoutée',
         'payment_reminder' => 'Rappel de paiement',
     ],
+    'lesson_event_type' => [
+        'checked_in' => 'Appel validé et pointage',
+        'attendance_updated' => 'Présences corrigées',
+        'work_recorded' => 'Travail réalisé enregistré',
+    ],
     'locale' => [
         'fr' => 'Français',
         'ar' => 'Arabe',

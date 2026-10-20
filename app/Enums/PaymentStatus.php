@@ -18,6 +18,17 @@ enum PaymentStatus: string
         return in_array($this, [self::Due, self::Overdue], true);
     }
 
+    /** Couleur de la jauge du cycle de séances. */
+    public function progressClasses(): string
+    {
+        return match ($this) {
+            self::UpToDate => 'bg-sage-500',
+            self::ReminderSoon => 'bg-honey-500',
+            self::Due => 'bg-terra-500',
+            self::Overdue => 'bg-red-600',
+        };
+    }
+
     public function badgeClasses(): string
     {
         return match ($this) {

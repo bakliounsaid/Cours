@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Enums\Cycle;
 use App\Models\Level;
 use App\Models\Room;
+use App\Models\Setting;
 use App\Models\Subject;
 use App\Models\TimeSlot;
 use App\Settings\DefaultSettings;
@@ -23,7 +24,9 @@ class ReferenceDataSeeder extends Seeder
         $this->levels();
         $this->timeSlots();
 
-        $existing = $settings->all();
+        // Lu en base, pas dans le cache : après un migrate:fresh, le cache peut encore
+        // contenir les anciens réglages et aucun ne serait recréé.
+        $existing = Setting::query()->pluck('key')->flip()->all();
         $settings->setMany(array_diff_key(DefaultSettings::all(), $existing));
     }
 

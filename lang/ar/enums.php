@@ -61,6 +61,11 @@ return [
         'lesson_added' => 'إضافة حصة',
         'payment_reminder' => 'تذكير بالدفع',
     ],
+    'lesson_event_type' => [
+        'checked_in' => 'تأكيد الحضور والتسجيل',
+        'attendance_updated' => 'تصحيح الحضور',
+        'work_recorded' => 'تسجيل العمل المنجز',
+    ],
     'locale' => [
         'fr' => 'الفرنسية',
         'ar' => 'العربية',

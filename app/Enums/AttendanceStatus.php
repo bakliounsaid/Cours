@@ -18,6 +18,16 @@ enum AttendanceStatus: string
         return $this !== self::Absent;
     }
 
+    /** Bouton sélectionné sur la feuille d'appel. */
+    public function selectedClasses(): string
+    {
+        return match ($this) {
+            self::Present => 'bg-emerald-600 text-white ring-emerald-600',
+            self::Absent => 'bg-red-600 text-white ring-red-600',
+            self::Late => 'bg-honey-500 text-ink ring-honey-500',
+        };
+    }
+
     public function badgeClasses(): string
     {
         return match ($this) {

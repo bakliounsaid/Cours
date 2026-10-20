@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Enums\PaymentMethod;
 use App\Models\Payment;
 use App\Models\Student;
+use App\Models\Teacher;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -19,6 +20,7 @@ class PaymentFactory extends Factory
     {
         return [
             'student_id' => Student::factory(),
+            'teacher_id' => Teacher::factory(),
             'amount' => 4000,
             'paid_at' => now(),
             'method' => PaymentMethod::Cash,

@@ -11,6 +11,8 @@ return new class extends Migration
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('student_id')->constrained()->restrictOnDelete();
+            // Les séances sont comptées et payées par enseignant (cycle de N séances chez lui)
+            $table->foreignId('teacher_id')->constrained()->restrictOnDelete();
             $table->unsignedInteger('amount');
             $table->dateTime('paid_at');
             $table->string('method', 20);
@@ -21,6 +23,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->index(['student_id', 'paid_at']);
+            $table->index(['teacher_id', 'student_id']);
         });
     }
 

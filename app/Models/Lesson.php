@@ -37,6 +37,8 @@ class Lesson extends Model
         'status',
         'title',
         'cancel_reason',
+        'summary',
+        'homework',
         'missing_attendance_alerted',
         'created_by',
     ];
@@ -107,6 +109,12 @@ class Lesson extends Model
     public function attendances(): HasMany
     {
         return $this->hasMany(Attendance::class);
+    }
+
+    /** Journal de la séance, du plus récent au plus ancien. */
+    public function events(): HasMany
+    {
+        return $this->hasMany(LessonEvent::class)->latest('created_at')->latest('id');
     }
 
     public function checkin(): HasOne
@@ -187,6 +195,30 @@ class Lesson extends Model
     public function startsInLabel(?CarbonInterface $at = null): string
     {
         return Format::minutes($this->minutesUntilStart($at));
+    }
+
+    /** Ouverture de l'appel : quelques minutes avant le début. */
+    public function attendanceOpensAt(): CarbonInterface
+    {
+        return $this->starts_at->copy()->subMinutes((int) config('educoeur.lessons.attendance_opens_minutes_before'));
+    }
+
+    /**
+     * L'appel se fait au début de la séance ; il reste modifiable jusqu'à la fin de la journée.
+     */
+    public function canTakeAttendance(?CarbonInterface $at = null): bool
+    {
+        $at ??= now();
+
+        return ! $this->isCancelled()
+            && $at->greaterThanOrEqualTo($this->attendanceOpensAt())
+            && $at->lessThanOrEqualTo($this->date->copy()->endOfDay());
+    }
+
+    /** L'appel a déjà été validé (enseignant pointé). */
+    public function isCheckedIn(): bool
+    {
+        return $this->checkin !== null;
     }
 
     public function isCancelled(): bool

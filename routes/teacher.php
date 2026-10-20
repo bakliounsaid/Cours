@@ -1,6 +1,7 @@
 <?php
 
 use App\Livewire\Teacher\Groups;
+use App\Livewire\Teacher\Lessons;
 use App\Livewire\Teacher\Students;
 use App\Livewire\Teacher\Today;
 use Illuminate\Support\Facades\Route;
@@ -15,3 +16,5 @@ Route::livewire('/groupes', Groups\Index::class)->name('groups');
 Route::livewire('/groupes/{group}', Groups\Show::class)->name('groups.show');
 
 Route::livewire('/eleves', Students\Index::class)->name('students');
+
+Route::livewire('/seances/{lesson}', Lessons\Show::class)->name('lessons.show');

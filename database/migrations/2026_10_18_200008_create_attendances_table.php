@@ -32,10 +32,24 @@ return new class extends Migration
 
             $table->index(['teacher_id', 'checked_at']);
         });
+
+        // Journal de la séance : chaque action (pointage, appel, modification, travail saisi)
+        // est conservée avec son auteur, sa date et les valeurs avant / après.
+        Schema::create('lesson_events', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('lesson_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
+            $table->string('type', 30);
+            $table->jsonb('data')->nullable();
+            $table->timestamp('created_at')->useCurrent();
+
+            $table->index(['lesson_id', 'created_at']);
+        });
     }
 
     public function down(): void
     {
+        Schema::dropIfExists('lesson_events');
         Schema::dropIfExists('teacher_checkins');
         Schema::dropIfExists('attendances');
     }
