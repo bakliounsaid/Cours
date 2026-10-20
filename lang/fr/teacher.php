@@ -110,7 +110,6 @@ return [
         'last_name' => 'Nom',
         'level' => 'Niveau',
         'parent_phone' => 'Téléphone du parent',
-        'parent_locale' => 'Langue du parent',
         'notes' => 'Remarques',
         'notes_placeholder' => 'Difficultés, objectifs, informations utiles…',
         'follow_up' => 'Suivi',
@@ -183,6 +182,25 @@ return [
         'recorded' => 'Paiement de :name enregistré (:count séances).',
         'to_ask' => 'Paiement à demander aujourd’hui : :names.',
         'dashboard_alert' => '{1} 1 élève a atteint son cycle de séances : paiement à demander.|[2,*] :count élèves ont atteint leur cycle de séances : paiements à demander.',
+    ],
+
+    'cancel' => [
+        'button' => 'Annuler la séance',
+        'title' => 'Annuler la séance',
+        'scope' => 'Que voulez-vous annuler ?',
+        'scope_once' => 'Cette semaine seulement',
+        'scope_once_hint' => 'Seule cette séance est annulée. Le créneau reste en place les semaines suivantes.',
+        'scope_permanent' => 'Définitivement',
+        'scope_permanent_hint' => 'Le créneau :slot est retiré du groupe « :group » : cette séance et toutes les suivantes sur ce créneau sont annulées.',
+        'reason' => 'Motif',
+        'reason_placeholder' => 'Ex. absence imprévue, examen, jour férié…',
+        'confirm' => 'Confirmer l’annulation',
+        'done_once' => 'Séance annulée pour cette semaine.',
+        'done_permanent' => '{1} Créneau retiré : 1 séance annulée.|[2,*] Créneau retiré : :count séances annulées.',
+        'not_allowed' => 'Cette séance ne peut plus être annulée (appel fait, séance terminée ou déjà annulée).',
+        'not_recurring' => 'Seule une séance de groupe régulière peut être annulée définitivement.',
+        'scope_once_done' => 'Annulée pour cette semaine seulement.',
+        'scope_permanent_done' => 'Annulée définitivement : créneau :slot retiré du groupe.',
     ],
 
     'conflicts' => [

@@ -13,7 +13,7 @@ use App\Support\Phone;
 class SubmitEnrollmentRequest
 {
     /**
-     * @param  array{student_name: string, level_id: int|string|null, subject_ids: list<int|string>, parent_phone: string, parent_locale: string, message?: ?string}  $data
+     * @param  array{student_name: string, level_id: int|string|null, subject_ids: list<int|string>, parent_phone: string, message?: ?string}  $data
      */
     public function handle(array $data): EnrollmentRequest
     {
@@ -22,7 +22,8 @@ class SubmitEnrollmentRequest
             'level_id' => $data['level_id'] ?: null,
             'subject_ids' => array_values(array_map('intval', $data['subject_ids'])),
             'parent_phone' => Phone::normalize($data['parent_phone']),
-            'parent_locale' => Locale::from($data['parent_locale']),
+            // La langue n'est plus demandée : celle de la page où le parent a rempli le formulaire
+            'parent_locale' => Locale::current(),
             'message' => filled($data['message'] ?? null) ? trim($data['message']) : null,
             'status' => EnrollmentStatus::New,
         ]);

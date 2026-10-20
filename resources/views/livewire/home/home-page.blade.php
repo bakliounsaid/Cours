@@ -7,7 +7,7 @@
         @include('home.story')
         @include('home.subjects')
         @include('home.levels-offers')
-        @include('home.hours-rooms')
+        @include('home.hours')
         @include('home.contact')
     </main>
 

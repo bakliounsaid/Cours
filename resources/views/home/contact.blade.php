@@ -9,10 +9,6 @@
 
             <ul x-reveal="200" class="mt-8 space-y-4">
                 <li class="flex items-start gap-4">
-                    <span class="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-olive-700 text-terra-200"><x-icon name="map-pin" /></span>
-                    <span><span class="block text-sm text-olive-200">{{ __('home.contact.address') }}</span><span class="font-bold">{{ $contact['address'] }}</span></span>
-                </li>
-                <li class="flex items-start gap-4">
                     <span class="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-olive-700 text-terra-200"><x-icon name="phone" /></span>
                     <span><span class="block text-sm text-olive-200">{{ __('home.contact.phone') }}</span><a href="{{ $contact['phone_href'] }}" class="font-bold hover:text-terra-200" dir="ltr">{{ $contact['phone'] }}</a></span>
                 </li>
@@ -26,7 +22,7 @@
             <div x-reveal="260" class="mt-8 overflow-hidden rounded-card ring-4 ring-olive-700">
                 <div wire:ignore
                      x-data
-                     x-intersect.once="window.educoeurMap?.($el, {{ $contact['latitude'] }}, {{ $contact['longitude'] }}, {{ Js::from($contact['address']) }})"
+                     x-intersect.once="window.educoeurMap?.($el, {{ $contact['latitude'] }}, {{ $contact['longitude'] }}, {{ Js::from(__('app.name')) }})"
                      class="h-64 w-full bg-olive-700"
                      role="img"
                      aria-label="{{ __('home.contact.map_title') }}"></div>

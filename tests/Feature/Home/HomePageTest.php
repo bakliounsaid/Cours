@@ -10,7 +10,7 @@ it('affiche toutes les sections en français', function () {
     $this->get('/fr')
         ->assertOk()
         ->assertSee('Chaque enfant mérite qu’on croie en lui')
-        ->assertSeeInOrder(['Pourquoi Éducœur', 'Mathématiques', 'Physique', 'Arabe', 'Français', 'Anglais', 'Primaire', 'CEM', 'Cours en groupe', 'Cours individuels', 'Salle Portail', 'Salle Mur'])
+        ->assertSeeInOrder(['Pourquoi Éducœur', 'Mathématiques', 'Physique', 'Arabe', 'Français', 'Anglais', 'Primaire', 'CEM', 'Cours en groupe', 'Cours individuels'])
         ->assertSee('Cité Ighil Taourga, Boumerdès')
         ->assertSee(route('teacher.login'));
 });
@@ -21,7 +21,7 @@ it('affiche la version arabe avec les noms de matières arabes', function () {
         ->assertSee('dir="rtl"', false)
         ->assertSee('كل طفل يستحق من يؤمن به')
         ->assertSee('الرياضيات')
-        ->assertSee('حي إغيل تاورقة، بومرداس');
+        ->assertDontSee('إغيل تاورقة');
 });
 
 it('raconte l’histoire de l’école avec ses trois missions', function () {
@@ -75,4 +75,24 @@ it('affiche les textes modifiés par l’admin, avec repli sur le français', fu
     app(Settings::class)->set('home.hero_title', ['fr' => 'Bienvenue chez nous', 'ar' => '']);
 
     $this->get('/ar')->assertSee('Bienvenue chez nous');
+});
+
+it('affiche la page française entièrement en français, sans lieu ni nombre de salles', function () {
+    $html = $this->get('/fr')->assertOk()->assertSee(__('home.gallery.title'))->getContent();
+    $visible = strip_tags(preg_replace('/<(script|style)\b.*?<\/\1>/s', '', $html));
+
+    // Seul le sélecteur de langue garde les noms natifs (« العربية »), par convention.
+    expect($visible)->not->toContain('إديكور')
+        ->and($visible)->not->toContain('نُعلّم بقلب')
+        ->and($visible)->not->toContain('Ighil')
+        ->and($visible)->not->toContain('Boumerdès')
+        ->and($visible)->not->toContain('Salle Portail');
+});
+
+it('affiche la page anglaise sans texte français ni arabe dans le hero', function () {
+    $this->get('/en')
+        ->assertOk()
+        ->assertSee('Teaching from the heart')
+        ->assertDontSee('Enseigner avec cœur')
+        ->assertDontSee('نُعلّم بقلب');
 });

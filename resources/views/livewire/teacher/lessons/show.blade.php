@@ -17,7 +17,52 @@
         <p class="mt-4 flex items-center gap-2 rounded-2xl px-4 py-3 text-sm font-bold ring-1 {{ $banner['classes'] }}" role="status">
             <x-icon :name="$banner['icon']" /> {{ $banner['text'] }}
         </p>
+        @if ($cancelReasonText)
+            <p class="mt-2 text-sm text-muted">{{ __('teacher.cancel.reason') }} : {{ $cancelReasonText }}</p>
+        @endif
+
+        @if ($canCancel)
+            <div class="mt-4 flex justify-end">
+                <button type="button" wire:click="openCancel" class="btn btn-sm bg-white text-red-600 ring-1 ring-red-200 hover:bg-red-50">
+                    <x-icon name="x-circle" class="size-4" /> {{ __('teacher.cancel.button') }}
+                </button>
+            </div>
+        @endif
     </section>
+
+    {{-- Annulation : cette semaine seulement ou définitivement --}}
+    <x-ui.modal wire:model="showCancel" :title="__('teacher.cancel.title')" :description="$when">
+        <form id="cancel-form" wire:submit="cancelLesson" class="space-y-4">
+            <fieldset class="space-y-2">
+                <legend class="label">{{ __('teacher.cancel.scope') }}</legend>
+                <label class="flex cursor-pointer items-start gap-3 rounded-2xl p-4 ring-1 ring-olive-100 transition has-checked:bg-terra-50 has-checked:ring-terra-300">
+                    <input type="radio" wire:model.live="cancelScope" value="once" class="mt-1 accent-terra-600">
+                    <span>
+                        <span class="block font-bold text-ink">{{ __('teacher.cancel.scope_once') }}</span>
+                        <span class="block text-sm text-muted">{{ __('teacher.cancel.scope_once_hint') }}</span>
+                    </span>
+                </label>
+                @if ($recurring)
+                    <label class="flex cursor-pointer items-start gap-3 rounded-2xl p-4 ring-1 ring-olive-100 transition has-checked:bg-red-50 has-checked:ring-red-300">
+                        <input type="radio" wire:model.live="cancelScope" value="permanent" class="mt-1 accent-red-600">
+                        <span>
+                            <span class="block font-bold text-ink">{{ __('teacher.cancel.scope_permanent') }}</span>
+                            <span class="block text-sm text-muted">{{ $permanentHint }}</span>
+                        </span>
+                    </label>
+                @endif
+            </fieldset>
+
+            <x-ui.textarea wire:model="cancelReason" :label="__('teacher.cancel.reason')" rows="2" :placeholder="__('teacher.cancel.reason_placeholder')" />
+        </form>
+
+        <x-slot:footer>
+            <button type="button" class="btn-ghost" x-on:click="open = false">{{ __('ui.back') }}</button>
+            <button type="submit" form="cancel-form" class="btn-danger" wire:loading.attr="disabled" wire:target="cancelLesson">
+                <span wire:loading wire:target="cancelLesson" class="spinner"></span> {{ __('teacher.cancel.confirm') }}
+            </button>
+        </x-slot:footer>
+    </x-ui.modal>
 
     {{-- Feuille d'appel : saisie instantanée dans le navigateur, envoyée à la validation --}}
     <section class="animate-fade-up [animation-delay:60ms]" aria-labelledby="roll-call"

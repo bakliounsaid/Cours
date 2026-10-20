@@ -65,6 +65,7 @@ return [
         'checked_in' => 'Attendance validated and check-in',
         'attendance_updated' => 'Attendance corrected',
         'work_recorded' => 'Work done recorded',
+        'cancelled' => 'Lesson cancelled',
     ],
     'locale' => [
         'fr' => 'French',

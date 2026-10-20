@@ -30,8 +30,6 @@ class StudentForm extends ModelForm
 
     public string $parent_phone = '';
 
-    public string $parent_locale = 'fr';
-
     public string $notes = '';
 
     /** Groupe à rejoindre (création uniquement). */
@@ -50,7 +48,6 @@ class StudentForm extends ModelForm
             'last_name' => ['required', 'string', 'max:80'],
             'level_id' => ['required', Rule::exists('levels', 'id')],
             'parent_phone' => ['required', 'string', new AlgerianPhone],
-            'parent_locale' => ['required', Rule::enum(Locale::class)],
             'notes' => ['nullable', 'string', 'max:1000'],
             'group_id' => ['nullable', Rule::in($this->teacher()->groups()->active()->pluck('id')->map(fn ($id) => (string) $id)->all())],
             'individual' => ['boolean'],
@@ -67,7 +64,6 @@ class StudentForm extends ModelForm
         $this->last_name = $model->last_name;
         $this->level_id = (string) $model->level_id;
         $this->parent_phone = Phone::format($model->parent_phone);
-        $this->parent_locale = $model->parent_locale->value;
         $this->notes = (string) $model->notes;
         $this->group_id = '';
         $this->individual = false;
@@ -86,14 +82,13 @@ class StudentForm extends ModelForm
         return $this->withFormErrors(fn () => DB::transaction(function () use ($data) {
             $student = $this->editingId
                 ? $this->teacher()->students()->findOrFail($this->editingId)
-                : new Student(['enrolled_at' => today()->toDateString(), 'is_active' => true]);
+                : new Student(['enrolled_at' => today()->toDateString(), 'is_active' => true, 'parent_locale' => Locale::default()]);
 
             $student->fill([
                 'first_name' => trim($data['first_name']),
                 'last_name' => trim($data['last_name']),
                 'level_id' => (int) $data['level_id'],
                 'parent_phone' => Phone::normalize($data['parent_phone']),
-                'parent_locale' => Locale::from($data['parent_locale']),
                 'notes' => filled($data['notes']) ? trim($data['notes']) : null,
             ])->save();
 

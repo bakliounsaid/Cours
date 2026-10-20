@@ -8,7 +8,6 @@
         <div>
             <h2 class="text-sm font-extrabold tracking-wider text-muted uppercase">{{ __('home.footer.contact') }}</h2>
             <ul class="mt-4 space-y-2 text-sm font-semibold text-olive-700">
-                <li>{{ $contact['address'] }}</li>
                 <li><a href="{{ $contact['phone_href'] }}" class="hover:text-terra-700" dir="ltr">{{ $contact['phone'] }}</a></li>
                 <li><a href="mailto:{{ $contact['email'] }}" class="hover:text-terra-700">{{ $contact['email'] }}</a></li>
             </ul>

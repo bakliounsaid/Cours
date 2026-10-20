@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'seo_title' => 'Éducœur · Cours de soutien à Boumerdès (primaire et CEM)',
+    'seo_title' => 'Éducœur · Cours de soutien pour le primaire et le CEM',
 
     'nav' => [
         'why' => 'Pourquoi nous',
@@ -18,10 +18,9 @@ return [
     'whatsapp_message' => 'Bonjour Éducœur, je souhaite avoir des informations sur les cours de soutien.',
 
     'hero' => [
-        'badge' => 'Cité Ighil Taourga · Boumerdès',
+        'badge' => 'Soutien scolaire depuis :year',
         'chip_groups' => '15 élèves max',
         'chip_levels' => 'Primaire & CEM',
-        'chip_subjects' => '5 matières',
         'card_attendance' => 'Présence notée',
         'card_progress' => 'Suivi personnalisé',
         'card_parents' => 'Parents informés',
@@ -39,11 +38,27 @@ return [
         'founded' => 'Fondée en',
         'timeline_label' => 'Les étapes d’Éducœur',
         'timeline' => [
-            'founded' => 'Ouverture de l’école à Ighil Taourga',
+            'founded' => 'Ouverture de l’école',
             'today' => 'Aujourd’hui',
-            'today_text' => ':rooms salles, :subjects matières, du primaire au CEM',
+            'today_text' => 'Du primaire au CEM, avec la même passion',
         ],
         'missions_title' => 'Notre mission',
+    ],
+
+    'gallery' => [
+        'title' => 'Notre histoire en images',
+        'open' => 'Agrandir la photo',
+        'close' => 'Fermer',
+        'previous' => 'Photo précédente',
+        'next' => 'Photo suivante',
+        'captions' => [
+            'nouvelle_salle' => 'Notre nouvelle salle, fraîchement repeinte',
+            'cours_arabe_tableau' => 'Leçon d’arabe au tableau',
+            'premiers_mots' => 'Les plus jeunes apprennent à écrire',
+            'travail_en_groupe' => 'Travail en petits groupes',
+            'au_tableau' => 'Chacun passe au tableau',
+            'concentration' => 'Concentration pendant un exercice',
+        ],
     ],
 
     'subjects' => [
@@ -93,14 +108,6 @@ return [
         'short_break' => 'pause de 30 min à midi',
     ],
 
-    'rooms' => [
-        'eyebrow' => 'Nos salles',
-        'title' => 'Deux salles lumineuses',
-        'subtitle' => 'Des espaces calmes, clairs et bien équipés pour bien se concentrer.',
-        'room_name' => 'Salle :name',
-        'room_text' => 'Lumineuse et accueillante · :capacity places',
-    ],
-
     'contact' => [
         'eyebrow' => 'Contact',
         'title' => 'Inscrire votre enfant',
@@ -121,7 +128,6 @@ return [
         'subjects' => 'Matières souhaitées',
         'parent_phone' => 'Téléphone du parent',
         'parent_phone_placeholder' => '0555 12 34 56',
-        'parent_locale' => 'Langue préférée pour vous contacter',
         'message' => 'Message (facultatif)',
         'message_placeholder' => 'Disponibilités, difficultés particulières, questions…',
         'submit' => 'Envoyer la demande',
@@ -133,7 +139,7 @@ return [
     ],
 
     'footer' => [
-        'about' => 'Cours de soutien bienveillants et sérieux pour le primaire et le CEM, à Boumerdès.',
+        'about' => 'Cours de soutien bienveillants et sérieux pour le primaire et le CEM.',
         'contact' => 'Nous contacter',
         'teacher_space' => 'Espace enseignant',
         'rights' => 'Tous droits réservés.',

@@ -65,6 +65,7 @@ return [
         'checked_in' => 'تأكيد الحضور والتسجيل',
         'attendance_updated' => 'تصحيح الحضور',
         'work_recorded' => 'تسجيل العمل المنجز',
+        'cancelled' => 'إلغاء الحصة',
     ],
     'locale' => [
         'fr' => 'الفرنسية',

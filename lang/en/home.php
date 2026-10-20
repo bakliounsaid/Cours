@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'seo_title' => 'Éducœur · Tutoring in Boumerdès (primary and middle school)',
+    'seo_title' => 'Éducœur · Tutoring for primary and middle school',
 
     'nav' => [
         'why' => 'Why us',
@@ -18,10 +18,9 @@ return [
     'whatsapp_message' => 'Hello Éducœur, I would like some information about your tutoring lessons.',
 
     'hero' => [
-        'badge' => 'Cité Ighil Taourga · Boumerdès',
+        'badge' => 'Tutoring since :year',
         'chip_groups' => '15 students max',
         'chip_levels' => 'Primary & middle school',
-        'chip_subjects' => '5 subjects',
         'card_attendance' => 'Attendance recorded',
         'card_progress' => 'Personal follow-up',
         'card_parents' => 'Parents kept informed',
@@ -39,11 +38,27 @@ return [
         'founded' => 'Founded in',
         'timeline_label' => 'Éducœur milestones',
         'timeline' => [
-            'founded' => 'The school opens in Ighil Taourga',
+            'founded' => 'The school opens',
             'today' => 'Today',
-            'today_text' => ':rooms rooms, :subjects subjects, from primary to middle school',
+            'today_text' => 'From primary to middle school, with the same passion',
         ],
         'missions_title' => 'Our mission',
+    ],
+
+    'gallery' => [
+        'title' => 'Our story in pictures',
+        'open' => 'Enlarge photo',
+        'close' => 'Close',
+        'previous' => 'Previous photo',
+        'next' => 'Next photo',
+        'captions' => [
+            'nouvelle_salle' => 'Our new classroom, freshly painted',
+            'cours_arabe_tableau' => 'Arabic lesson at the board',
+            'premiers_mots' => 'The youngest learn to write',
+            'travail_en_groupe' => 'Working in small groups',
+            'au_tableau' => 'Everyone takes a turn at the board',
+            'concentration' => 'Focused on an exercise',
+        ],
     ],
 
     'subjects' => [
@@ -93,14 +108,6 @@ return [
         'short_break' => '30-minute lunch break',
     ],
 
-    'rooms' => [
-        'eyebrow' => 'Our rooms',
-        'title' => 'Two bright classrooms',
-        'subtitle' => 'Calm, bright and well-equipped spaces to help students focus.',
-        'room_name' => 'Room :name',
-        'room_text' => 'Bright and welcoming · :capacity seats',
-    ],
-
     'contact' => [
         'eyebrow' => 'Contact',
         'title' => 'Enrol your child',
@@ -121,7 +128,6 @@ return [
         'subjects' => 'Subjects wanted',
         'parent_phone' => 'Parent’s phone',
         'parent_phone_placeholder' => '0555 12 34 56',
-        'parent_locale' => 'Preferred language to contact you',
         'message' => 'Message (optional)',
         'message_placeholder' => 'Availability, specific difficulties, questions…',
         'submit' => 'Send the request',
@@ -133,7 +139,7 @@ return [
     ],
 
     'footer' => [
-        'about' => 'Caring and serious tutoring for primary and middle school students, in Boumerdès.',
+        'about' => 'Caring and serious tutoring for primary and middle school students.',
         'contact' => 'Contact us',
         'teacher_space' => 'Teacher space',
         'rights' => 'All rights reserved.',

@@ -1,14 +1,4 @@
-@php
-    $links = [
-        'pourquoi' => __('home.nav.why'),
-        'histoire' => __('home.nav.story'),
-        'matieres' => __('home.nav.subjects'),
-        'formules' => __('home.nav.offers'),
-        'horaires' => __('home.nav.hours'),
-        'contact' => __('home.nav.contact'),
-    ];
-@endphp
-
+{{-- En-tête de la page d'accueil : $navLinks fourni par App\Livewire\Home\HomePage --}}
 <header x-data="{ scrolled: false, menu: false }"
         x-init="scrolled = window.scrollY > 10"
         x-on:scroll.window="scrolled = window.scrollY > 10"
@@ -21,7 +11,7 @@
         </a>
 
         <nav class="ms-6 hidden flex-1 items-center gap-1 lg:flex" aria-label="{{ __('home.nav.menu') }}">
-            @foreach ($links as $anchor => $label)
+            @foreach ($navLinks as $anchor => $label)
                 <a href="#{{ $anchor }}" class="rounded-full px-3.5 py-2 text-sm font-bold text-muted transition hover:bg-terra-50 hover:text-terra-700">{{ $label }}</a>
             @endforeach
         </nav>
@@ -40,7 +30,7 @@
     {{-- Menu mobile --}}
     <nav x-show="menu" x-collapse x-cloak class="border-t border-olive-50 bg-white lg:hidden" aria-label="{{ __('home.nav.menu') }}">
         <ul class="mx-auto max-w-6xl space-y-1 px-4 py-4">
-            @foreach ($links as $anchor => $label)
+            @foreach ($navLinks as $anchor => $label)
                 <li><a href="#{{ $anchor }}" x-on:click="menu = false" class="block rounded-xl px-4 py-3 font-bold text-olive-700 hover:bg-sand-100">{{ $label }}</a></li>
             @endforeach
             <li class="pt-2"><a href="#contact" x-on:click="menu = false" class="btn-primary w-full py-3">{{ __('home.enroll_cta') }}</a></li>

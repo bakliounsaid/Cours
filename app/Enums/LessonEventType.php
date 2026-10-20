@@ -17,12 +17,16 @@ enum LessonEventType: string
     /** Travail réalisé / devoirs saisis ou modifiés. */
     case WorkRecorded = 'work_recorded';
 
+    /** Séance annulée par l'enseignant (cette semaine ou définitivement). */
+    case Cancelled = 'cancelled';
+
     public function icon(): string
     {
         return match ($this) {
             self::CheckedIn => 'clipboard-check',
             self::AttendanceUpdated => 'pencil',
             self::WorkRecorded => 'book-open',
+            self::Cancelled => 'x-circle',
         };
     }
 }

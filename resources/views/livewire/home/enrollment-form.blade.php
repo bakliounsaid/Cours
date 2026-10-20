@@ -42,17 +42,6 @@
                 </div>
             </x-ui.field>
 
-            <x-ui.field :label="__('home.form.parent_locale')" for="parent_locale" required>
-                <div class="grid grid-cols-2 gap-2">
-                    @foreach (\App\Enums\Locale::cases() as $option)
-                        <label class="cursor-pointer">
-                            <input type="radio" value="{{ $option->value }}" wire:model="parent_locale" class="peer sr-only">
-                            <span class="flex items-center justify-center rounded-xl px-4 py-2.5 font-bold text-muted ring-1 ring-olive-200 transition peer-checked:bg-olive-700 peer-checked:text-white peer-checked:ring-olive-700" lang="{{ $option->value }}">{{ $option->nativeName() }}</span>
-                        </label>
-                    @endforeach
-                </div>
-            </x-ui.field>
-
             <x-ui.textarea wire:model.live.blur="message" :label="__('home.form.message')" :placeholder="__('home.form.message_placeholder')" rows="3" />
 
             {{-- Champ piège anti-robots, invisible pour les humains --}}

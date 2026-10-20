@@ -47,7 +47,6 @@ it('crée un élève suivi en cours individuel', function () {
         ->set('form.last_name', 'Saidi')
         ->set('form.level_id', (string) $this->level->id)
         ->set('form.parent_phone', '0555 12 34 56')
-        ->set('form.parent_locale', 'en')
         ->set('form.individual', true)
         ->call('save')
         ->assertHasNoErrors();
@@ -55,7 +54,7 @@ it('crée un élève suivi en cours individuel', function () {
     $student = Student::query()->where('first_name', 'Rayan')->sole();
 
     expect($this->teacher->individualStudents()->whereKey($student->id)->exists())->toBeTrue()
-        ->and($student->parent_locale->value)->toBe('en');
+        ->and($student->parent_locale->value)->toBe('fr');
 });
 
 it('exige un groupe ou les cours individuels à la création', function () {

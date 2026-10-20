@@ -4,7 +4,6 @@ namespace App\Livewire\Teacher\Students;
 
 use App\Enums\LessonStatus;
 use App\Enums\LessonType;
-use App\Enums\Locale;
 use App\Enums\PaymentMethod;
 use App\Livewire\Concerns\WithModalForm;
 use App\Livewire\Forms\IndividualLessonForm;
@@ -173,7 +172,6 @@ class Index extends Component
             'balances' => $balances,
             'filters' => ['all', 'group', 'individual', 'payment'],
             'methodOptions' => PaymentMethod::options(),
-            'localeOptions' => Locale::options(),
             'today' => today()->toDateString(),
             'durationOptions' => [60 => '1 h', 90 => '1 h 30', 120 => '2 h'],
             'counts' => [

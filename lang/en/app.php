@@ -4,7 +4,7 @@ return [
     'name' => 'Éducœur',
     'name_ar' => 'إديكور',
     'slogan' => 'Teaching from the heart',
-    'meta_description' => 'Éducœur, tutoring in Cité Ighil Taourga, Boumerdès: maths, physics, Arabic, French and English for primary and middle school, in small groups of 15 students maximum.',
+    'meta_description' => 'Éducœur, tutoring: maths, physics, Arabic, French and English for primary and middle school, in small groups of 15 students maximum.',
     'currency' => 'DA',
     'switch_language' => 'Switch to :language',
     'choose_language' => 'Choose language',

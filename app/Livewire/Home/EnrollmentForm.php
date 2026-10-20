@@ -4,7 +4,6 @@ namespace App\Livewire\Home;
 
 use App\Actions\Enrollment\SubmitEnrollmentRequest;
 use App\Enums\Cycle;
-use App\Enums\Locale;
 use App\Models\Level;
 use App\Rules\AlgerianPhone;
 use App\Support\Catalog;
@@ -30,19 +29,12 @@ class EnrollmentForm extends Component
 
     public string $parent_phone = '';
 
-    public string $parent_locale = '';
-
     public string $message = '';
 
     /** Champ piège invisible : les robots le remplissent, les humains non. */
     public string $website = '';
 
     public bool $submitted = false;
-
-    public function mount(): void
-    {
-        $this->parent_locale = Locale::current()->value;
-    }
 
     /**
      * @return array<string, mixed>
@@ -55,7 +47,6 @@ class EnrollmentForm extends Component
             'subject_ids' => ['required', 'array', 'min:1'],
             'subject_ids.*' => [Rule::exists('subjects', 'id')->where('is_active', true)],
             'parent_phone' => ['required', 'string', new AlgerianPhone],
-            'parent_locale' => ['required', Rule::enum(Locale::class)],
             'message' => ['nullable', 'string', 'max:1000'],
         ];
     }

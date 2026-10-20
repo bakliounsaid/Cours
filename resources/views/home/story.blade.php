@@ -1,5 +1,14 @@
 {{-- Notre histoire : mise en page éditoriale, grand « 2019 » en accent, frise et missions --}}
-<section id="histoire" class="relative scroll-mt-20 overflow-hidden bg-sage-100 py-20 sm:py-28" aria-labelledby="histoire-titre">
+<section id="histoire" class="relative scroll-mt-20 overflow-hidden bg-sage-100 py-20 sm:py-28" aria-labelledby="histoire-titre"
+         x-data="{
+             photos: @js($gallery),
+             current: null,
+             next() { this.current = (this.current + 1) % this.photos.length },
+             previous() { this.current = (this.current - 1 + this.photos.length) % this.photos.length },
+         }"
+         x-on:keydown.escape.window="current = null"
+         x-on:keydown.arrow-right.window="current !== null && next()"
+         x-on:keydown.arrow-left.window="current !== null && previous()">
     <div aria-hidden="true" class="pointer-events-none absolute -end-24 top-10 size-80 rounded-full bg-sage-200/70 blur-2xl"></div>
     <div aria-hidden="true" class="pointer-events-none absolute -start-16 bottom-0 size-64 rounded-full bg-honey-200/50 blur-2xl"></div>
 
@@ -46,10 +55,52 @@
                 </span>
                 <div class="sm:mt-1">
                     <p class="font-bold text-olive-700">{{ __('home.story.timeline.today') }}</p>
-                    <p class="text-sm text-muted">{{ __('home.story.timeline.today_text', ['rooms' => $rooms->count(), 'subjects' => $subjects->count()]) }}</p>
+                    <p class="text-sm text-muted">{{ __('home.story.timeline.today_text') }}</p>
                 </div>
             </li>
         </ol>
+
+        {{-- Notre histoire en images : petites photos, agrandies au clic --}}
+        <div class="mt-16">
+            <h3 x-reveal class="text-center font-display text-xl font-bold text-olive-700">{{ __('home.gallery.title') }}</h3>
+            <ul class="mt-6 grid grid-cols-3 gap-2.5 sm:grid-cols-6 sm:gap-3">
+                @foreach ($gallery as $photo)
+                    <li x-reveal="{{ $loop->index * 60 }}">
+                        <button type="button" x-on:click="current = {{ $loop->index }}"
+                                class="group relative block aspect-square w-full overflow-hidden rounded-2xl bg-sand-200 shadow-soft ring-2 ring-white transition hover:-translate-y-1 hover:shadow-lift focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-terra-500"
+                                title="{{ $photo['caption'] }}">
+                            <picture>
+                                <source srcset="{{ $photo['webp'] }}" type="image/webp">
+                                <img src="{{ $photo['jpg'] }}" width="{{ $photo['width'] }}" height="{{ $photo['height'] }}" alt="{{ $photo['caption'] }}"
+                                     loading="lazy" decoding="async" class="size-full object-cover transition duration-500 group-hover:scale-110">
+                            </picture>
+                            <span class="sr-only">{{ __('home.gallery.open') }}</span>
+                        </button>
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+
+        {{-- Visionneuse --}}
+        <div x-show="current !== null" x-cloak x-transition.opacity
+             class="fixed inset-0 z-[60] flex items-center justify-center bg-olive-950/90 p-4 backdrop-blur-sm"
+             role="dialog" aria-modal="true" x-on:click.self="current = null">
+            <template x-if="current !== null">
+                <figure class="flex max-h-full w-full max-w-4xl flex-col items-center">
+                    <img :src="photos[current].webp" :alt="photos[current].caption" class="max-h-[78dvh] w-auto rounded-2xl object-contain shadow-lift">
+                    <figcaption class="mt-4 text-center font-display text-lg font-bold text-white" x-text="photos[current].caption"></figcaption>
+                </figure>
+            </template>
+            <button type="button" x-on:click="current = null" class="absolute end-4 top-4 flex size-11 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20">
+                <x-icon name="x" /><span class="sr-only">{{ __('home.gallery.close') }}</span>
+            </button>
+            <button type="button" x-on:click="previous()" class="absolute start-3 top-1/2 flex size-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20">
+                <x-icon name="chevron-left" class="flip-rtl" /><span class="sr-only">{{ __('home.gallery.previous') }}</span>
+            </button>
+            <button type="button" x-on:click="next()" class="absolute end-3 top-1/2 flex size-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20">
+                <x-icon name="chevron-right" class="flip-rtl" /><span class="sr-only">{{ __('home.gallery.next') }}</span>
+            </button>
+        </div>
 
         {{-- Missions --}}
         <h3 class="sr-only">{{ __('home.story.missions_title') }}</h3>

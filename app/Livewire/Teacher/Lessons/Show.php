@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Teacher\Lessons;
 
+use App\Actions\Lessons\CancelLesson;
 use App\Actions\Lessons\RecordLessonWork;
 use App\Actions\Lessons\TakeAttendance;
 use App\Enums\AttendanceStatus;
@@ -14,13 +15,14 @@ use App\Support\Format;
 use App\Support\LessonBalance;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 /**
- * Fiche d'une séance : appel au début (pointage), travail réalisé, journal.
+ * Fiche d'une séance : appel au début (pointage), travail réalisé, annulation, journal.
  */
 #[Layout('components.layouts.teacher')]
 class Show extends Component
@@ -36,6 +38,13 @@ class Show extends Component
     public string $summary = '';
 
     public string $homework = '';
+
+    public bool $showCancel = false;
+
+    /** once (cette semaine seulement) | permanent (créneau retiré du groupe) */
+    public string $cancelScope = CancelLesson::ONCE;
+
+    public string $cancelReason = '';
 
     public function mount(Lesson $lesson): void
     {
@@ -92,6 +101,36 @@ class Show extends Component
         $this->dispatch('toast', type: 'success', message: __('teacher.lessons.work_saved'));
     }
 
+    public function openCancel(): void
+    {
+        $this->resetValidation();
+        $this->cancelScope = CancelLesson::ONCE;
+        $this->cancelReason = '';
+        $this->showCancel = true;
+    }
+
+    public function cancelLesson(): void
+    {
+        $this->validate([
+            'cancelScope' => ['required', Rule::in([CancelLesson::ONCE, CancelLesson::PERMANENT])],
+            'cancelReason' => ['nullable', 'string', 'max:500'],
+        ]);
+
+        try {
+            $count = app(CancelLesson::class)->handle($this->lesson, $this->cancelScope, $this->cancelReason, auth()->user());
+        } catch (ValidationException $exception) {
+            $this->dispatch('toast', type: 'error', message: collect($exception->errors())->flatten()->first());
+
+            return;
+        }
+
+        $this->showCancel = false;
+        $this->lesson->refresh();
+        $this->dispatch('toast', type: 'success', message: $this->cancelScope === CancelLesson::PERMANENT
+            ? trans_choice('teacher.cancel.done_permanent', $count, ['count' => $count])
+            : __('teacher.cancel.done_once'));
+    }
+
     public function render(): View
     {
         $lesson = $this->lesson->load(['group', 'subject', 'room', 'students', 'checkin']);
@@ -108,6 +147,12 @@ class Show extends Component
                 'selected' => $status->selectedClasses(),
             ], AttendanceStatus::cases()),
             'canTake' => $lesson->canTakeAttendance(),
+            'canCancel' => $lesson->canBeCancelled(),
+            'recurring' => $lesson->isRecurring(),
+            'permanentHint' => $lesson->isRecurring()
+                ? __('teacher.cancel.scope_permanent_hint', ['slot' => $lesson->timeSlot->label(), 'group' => $lesson->group->name])
+                : null,
+            'cancelReasonText' => $lesson->isCancelled() ? $lesson->cancel_reason : null,
             'checkedIn' => $checkedIn,
             'banner' => $this->banner($lesson, $checkedIn),
             'events' => $lesson->events()->with('user')->get()->map(fn (LessonEvent $event) => [

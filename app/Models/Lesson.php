@@ -215,6 +215,18 @@ class Lesson extends Model
             && $at->lessThanOrEqualTo($this->date->copy()->endOfDay());
     }
 
+    /** Annulable tant que l'appel n'est pas fait et que la séance n'est pas terminée. */
+    public function canBeCancelled(?CarbonInterface $at = null): bool
+    {
+        return ! $this->isCancelled() && $this->checkin === null && ! $this->hasEnded($at);
+    }
+
+    /** Séance issue d'un créneau hebdomadaire de groupe : l'annulation peut être définitive. */
+    public function isRecurring(): bool
+    {
+        return $this->type === LessonType::Group && $this->group_id !== null && $this->time_slot_id !== null;
+    }
+
     /** L'appel a déjà été validé (enseignant pointé). */
     public function isCheckedIn(): bool
     {

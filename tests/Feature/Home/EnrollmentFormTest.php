@@ -18,7 +18,6 @@ function fillEnrollment(): Testable
         ->set('level_id', (string) Level::first()->id)
         ->set('subject_ids', [(string) Subject::first()->id])
         ->set('parent_phone', '+213 555 12 34 56')
-        ->set('parent_locale', 'ar')
         ->set('message', 'Disponible le samedi');
 }
 
@@ -28,7 +27,7 @@ it('enregistre une demande d’inscription visible dans l’admin', function () 
     $request = EnrollmentRequest::sole();
     expect($request->student_name)->toBe('Yanis Benali')
         ->and($request->parent_phone)->toBe('0555123456')
-        ->and($request->parent_locale->value)->toBe('ar')
+        ->and($request->parent_locale->value)->toBe('fr')
         ->and($request->status)->toBe(EnrollmentStatus::New);
 });
 

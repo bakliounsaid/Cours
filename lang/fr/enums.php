@@ -65,6 +65,7 @@ return [
         'checked_in' => 'Appel validé et pointage',
         'attendance_updated' => 'Présences corrigées',
         'work_recorded' => 'Travail réalisé enregistré',
+        'cancelled' => 'Séance annulée',
     ],
     'locale' => [
         'fr' => 'Français',

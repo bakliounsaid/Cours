@@ -5,7 +5,6 @@ namespace App\Livewire\Teacher\Groups;
 use App\Actions\Groups\AddStudentToGroup;
 use App\Enums\AttendanceStatus;
 use App\Enums\LessonStatus;
-use App\Enums\Locale;
 use App\Livewire\Concerns\WithModalForm;
 use App\Livewire\Forms\StudentForm;
 use App\Livewire\Teacher\Concerns\ForCurrentTeacher;
@@ -168,7 +167,6 @@ class Show extends Component
                 ->get(),
             'history' => $this->history(),
             'levelOptions' => Catalog::levels()->pluck('name', 'id')->all(),
-            'localeOptions' => Locale::options(),
         ])->title($this->group->name);
     }
 }

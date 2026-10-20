@@ -13,10 +13,7 @@
 
         <x-ui.select wire:model.live="form.level_id" :label="__('teacher.students.level')" :options="$levelOptions" :placeholder="__('ui.choose')" required />
 
-        <div class="grid gap-4 sm:grid-cols-2">
-            <x-ui.input wire:model.live.blur="form.parent_phone" type="tel" dir="ltr" :label="__('teacher.students.parent_phone')" placeholder="0555 12 34 56" required />
-            <x-ui.select wire:model="form.parent_locale" :label="__('teacher.students.parent_locale')" :options="$localeOptions" required />
-        </div>
+        <x-ui.input wire:model.live.blur="form.parent_phone" type="tel" dir="ltr" :label="__('teacher.students.parent_phone')" placeholder="0555 12 34 56" required />
 
         @if (! $form->isEditing() && $groupOptions !== null)
             <fieldset class="space-y-3 rounded-2xl bg-sand-100 p-4">

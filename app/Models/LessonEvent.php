@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * - checked_in : {present: int, absent: int, late: int}
  * - attendance_updated : {changes: [{student: "Yanis Benali", from: "absent", to: "present"}]}
  * - work_recorded : {summary: ?string, homework: ?string, previous_summary: ?string, previous_homework: ?string}
+ * - cancelled : {scope: once|permanent, reason: ?string, slot: ?string}
  */
 class LessonEvent extends Model
 {
@@ -68,6 +69,12 @@ class LessonEvent extends Model
             LessonEventType::WorkRecorded => array_values(array_filter([
                 filled($data['summary'] ?? null) ? __('teacher.lessons.summary').' : '.$data['summary'] : null,
                 filled($data['homework'] ?? null) ? __('teacher.lessons.homework').' : '.$data['homework'] : null,
+            ])),
+            LessonEventType::Cancelled => array_values(array_filter([
+                ($data['scope'] ?? 'once') === 'permanent'
+                    ? __('teacher.cancel.scope_permanent_done', ['slot' => $data['slot'] ?? ''])
+                    : __('teacher.cancel.scope_once_done'),
+                filled($data['reason'] ?? null) ? __('teacher.cancel.reason').' : '.$data['reason'] : null,
             ])),
         };
     }

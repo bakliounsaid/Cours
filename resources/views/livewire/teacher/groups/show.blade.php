@@ -39,10 +39,10 @@
                 <p class="mb-2 text-xs font-bold tracking-wide text-subtle uppercase">{{ __('teacher.groups.next_lessons') }}</p>
                 <div class="flex flex-wrap gap-2">
                     @foreach ($nextLessons as $lesson)
-                        <span class="inline-flex items-center gap-1.5 rounded-full bg-olive-50 px-3 py-1 text-xs font-semibold text-olive-700">
+                        <a href="{{ route('teacher.lessons.show', $lesson) }}" wire:navigate class="inline-flex items-center gap-1.5 rounded-full bg-olive-50 px-3 py-1 text-xs font-semibold text-olive-700 transition hover:bg-olive-100">
                             <x-icon name="calendar" class="size-3.5" />
                             <span class="capitalize">{{ $lesson->date->translatedFormat('D j M') }}</span> · <span dir="ltr">{{ $lesson->starts_at->format('H:i') }}</span>
-                        </span>
+                        </a>
                     @endforeach
                 </div>
             </div>

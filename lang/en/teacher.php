@@ -110,7 +110,6 @@ return [
         'last_name' => 'Last name',
         'level' => 'Level',
         'parent_phone' => 'Parent’s phone',
-        'parent_locale' => 'Parent’s language',
         'notes' => 'Notes',
         'notes_placeholder' => 'Difficulties, goals, useful information…',
         'follow_up' => 'Follow-up',
@@ -183,6 +182,25 @@ return [
         'recorded' => 'Payment from :name recorded (:count lessons).',
         'to_ask' => 'Ask for payment today: :names.',
         'dashboard_alert' => '{1} 1 student has reached their lesson cycle: ask for payment.|[2,*] :count students have reached their lesson cycle: ask for payment.',
+    ],
+
+    'cancel' => [
+        'button' => 'Cancel the lesson',
+        'title' => 'Cancel the lesson',
+        'scope' => 'What do you want to cancel?',
+        'scope_once' => 'This week only',
+        'scope_once_hint' => 'Only this lesson is cancelled. The time slot stays in place in the following weeks.',
+        'scope_permanent' => 'Permanently',
+        'scope_permanent_hint' => 'The slot :slot is removed from the group “:group”: this lesson and all the following ones on this slot are cancelled.',
+        'reason' => 'Reason',
+        'reason_placeholder' => 'e.g. unexpected absence, exam, public holiday…',
+        'confirm' => 'Confirm cancellation',
+        'done_once' => 'Lesson cancelled for this week.',
+        'done_permanent' => '{1} Slot removed: 1 lesson cancelled.|[2,*] Slot removed: :count lessons cancelled.',
+        'not_allowed' => 'This lesson can no longer be cancelled (attendance taken, lesson finished or already cancelled).',
+        'not_recurring' => 'Only a regular group lesson can be cancelled permanently.',
+        'scope_once_done' => 'Cancelled for this week only.',
+        'scope_permanent_done' => 'Cancelled permanently: slot :slot removed from the group.',
     ],
 
     'conflicts' => [

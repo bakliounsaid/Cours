@@ -1,22 +1,16 @@
-<p align="center">
-  <img src="public/images/brand/logo-icon.svg" width="96" alt="Logo Éducœur">
-</p>
+# Application de gestion d'une école de soutien scolaire
 
-<h1 align="center">Éducœur · إديكور</h1>
+Application web pour une école de cours de soutien (primaire et collège) : site de présentation pour les parents, administration de l'école et espace des enseignants. Les cours se font en petits groupes ou en cours individuels.
 
-<p align="center"><strong>Enseigner avec cœur · نُعلّم بقلب</strong></p>
-
-Application web de l'école de cours de soutien **Éducœur**, Cité Ighil Taourga, Boumerdès (Algérie) : cours de mathématiques, physique, arabe, français et anglais pour le primaire et le CEM, en groupes de 15 élèves maximum ou en cours individuels.
-
-L'application réunit trois espaces, tous en **français et en arabe** (arabe en RTL complet) :
+L'application réunit trois espaces, en **français, arabe et anglais** (arabe en RTL complet) :
 
 | Espace | Adresse | Pour qui |
 |---|---|---|
-| Site public | `/`, `/fr`, `/ar` | Les parents : présentation de l'école, horaires, carte, demande d'inscription |
-| Administration | `/admin` | La direction : enseignants, groupes, planning, paiements, paramètres |
-| Espace enseignant | `/enseignant` | Les enseignants : séances du jour et de la semaine, appel, absences (installable en PWA) |
+| Site public | `/`, `/fr`, `/ar`, `/en` | Les parents : présentation de l'école, matières, horaires, photos, demande d'inscription |
+| Administration | `/admin` | La direction : enseignants, tarifs, planning, paramètres |
+| Espace enseignant | `/enseignant` | Les enseignants : groupes, élèves, séances, appel, paiements (mobile d'abord) |
 
-Il n'y a pas de compte élève ni parent : les parents sont prévenus par SMS / WhatsApp, à l'initiative de l'admin.
+Il n'y a pas de compte élève ni parent.
 
 ---
 
@@ -26,54 +20,57 @@ Il n'y a pas de compte élève ni parent : les parents sont prévenus par SMS / 
 2. [Stack technique](#stack-technique)
 3. [Installation avec Docker](#installation-avec-docker)
 4. [Base de données Supabase](#base-de-données-supabase)
-5. [Comptes](#comptes)
-6. [Commandes utiles](#commandes-utiles)
-7. [Tests](#tests)
-8. [Organisation du code](#organisation-du-code)
-9. [Conventions du projet](#conventions-du-projet)
-10. [Charte graphique](#charte-graphique)
-11. [Avancement](#avancement)
+5. [Déploiement sur Vercel](#déploiement-sur-vercel)
+6. [Comptes](#comptes)
+7. [Commandes utiles](#commandes-utiles)
+8. [Tests](#tests)
+9. [Organisation du code](#organisation-du-code)
+10. [Conventions du projet](#conventions-du-projet)
+11. [Charte graphique](#charte-graphique)
+12. [Avancement](#avancement)
 
 ---
 
 ## Fonctionnalités
 
 ### Site public
-- Accroche, atouts de l'école, **« Notre histoire »** (fondée en 2019 par Essaid Baklioun) et ses trois missions.
-- Matières, niveaux (primaire et CEM), formules (groupe ou individuel).
+- Accroche avec une photo mise en avant, atouts de l'école, section « Notre histoire » avec ses missions et une galerie de petites photos (agrandies au clic).
+- Matières, niveaux, formules (groupe ou individuel).
 - **Horaires calculés automatiquement** à partir des créneaux de l'admin.
-- Salles, contact, carte OpenStreetMap (Leaflet) et bouton WhatsApp.
-- **Formulaire de demande d'inscription** : validation en temps réel, numéros algériens, champ anti-robot, 5 envois par heure au maximum. Les demandes sont enregistrées en base et visibles dans l'admin.
-- Référencement : titre et description, `canonical`, `hreflang` FR / AR / x-default, Open Graph avec image dédiée, données structurées `EducationalOrganization`.
+- Contact, carte OpenStreetMap (Leaflet) et bouton WhatsApp.
+- **Formulaire de demande d'inscription** : validation en temps réel, numéros algériens, champ anti-robot, 5 envois par heure au maximum. La langue de la page est enregistrée avec la demande.
+- **Une page = une seule langue** : une page en français n'affiche aucun texte arabe ou anglais (seul le menu des langues garde les noms natifs).
+- Référencement : `canonical`, `hreflang` FR / AR / EN / x-default, Open Graph, données structurées `EducationalOrganization`.
 - Apparitions animées légères, désactivées si le visiteur a choisi de réduire les animations (`prefers-reduced-motion`).
-- Tous les textes (accroche, atouts, histoire, missions, téléphone, WhatsApp, adresse, position de la carte) sont des **réglages bilingues** modifiables depuis l'admin. Si la version arabe est vide, le texte français s'affiche.
+- Les textes de la page (accroche, atouts, histoire, missions, contact, position de la carte) sont des **réglages multilingues** modifiables depuis l'admin. Si une traduction est vide, le texte français s'affiche.
 
 ### Administration
-- **Tableau de bord** :
-  - chiffres clés (séances du jour, enseignants et élèves actifs, nouvelles demandes, séances à traiter) ;
-  - **planning de la semaine**, du dimanche au samedi : chaque séance avec horaires, groupe, matière, salle et nom de l'enseignant ;
-  - navigation de semaine en semaine.
+- **Tableau de bord** : chiffres clés et **planning de la semaine** (dimanche → samedi), avec navigation de semaine en semaine.
 - **Enseignants** :
-  - création du compte de connexion (e-mail, mot de passe, langue), matières, tarif par séance, statut actif ou inactif ;
-  - un enseignant inactif ne peut plus se connecter.
-- **Fiche enseignant** :
-  - chiffres du mois (séances faites, à venir, annulées, montant à payer) ;
-  - **historique complet de ses séances**, remplacements compris, filtrable par période, statut et type, exportable en Excel.
-- **Salles** : nom, capacité (15 au maximum), couleur dans le planning.
-- Composants communs à toutes les pages de gestion :
-  - tableaux avec recherche, filtres, tri, pagination et export Excel (cartes empilées sur mobile) ;
-  - formulaires en modale avec validation en temps réel ;
-  - fenêtre de confirmation et notifications « toast ».
+  - compte de connexion, matières, statut actif / inactif (un enseignant inactif ne peut plus se connecter) ;
+  - **deux tarifs par séance** : groupe collectif et cours individuel.
+- **Fiche enseignant** : chiffres du mois et historique complet des séances, filtrable et exportable en Excel.
+- **Salles** : nom, capacité, couleur dans le planning.
+- Composants communs : tableaux avec recherche, filtres, tri, pagination et export Excel ; formulaires en modale ; confirmations et notifications « toast ».
 
 ### Espace enseignant
-- Mise en page mobile d'abord, avec onglets en bas d'écran.
-- Les fonctions de l'enseignant (voir ses séances, faire l'appel, déclarer une absence, voir ses heures) arrivent à l'étape 7 (voir [Avancement](#avancement)).
+- **Accueil** : séances du jour (état en direct : à venir / en cours / terminée), prochains jours, chiffres du mois, tarifs, alerte des paiements à demander.
+- **Groupes** :
+  - création, modification, archivage ; choix des créneaux avec contrôle des conflits (salle, enseignant) ;
+  - le groupe est attribué à l'enseignant qui le crée, qui peut le confier à un collègue de la même matière ;
+  - fiche groupe : élèves (ajout d'un élève existant ou nouveau, retrait), places restantes, prochaines séances, historique des séances passées.
+- **Élèves** : élèves des groupes et des cours individuels, filtres, programmation d'un cours individuel, appel et WhatsApp aux parents.
+- **Appel et pointage** :
+  - l'appel s'ouvre 10 minutes avant le début de la séance et reste corrigeable jusqu'à la fin de la journée ;
+  - sa validation pointe l'enseignant (tarif de groupe ou individuel figé) et passe la séance à « faite » ;
+  - saisie du travail réalisé et des devoirs.
+- **Annulation d'une séance** : pour cette semaine seulement, ou définitivement (le créneau est retiré du groupe et les séances suivantes sont annulées).
+- **Traçabilité** : chaque action sur une séance (appel, correction des présences, travail saisi, annulation) est inscrite dans un journal non modifiable, avec son auteur, sa date et les valeurs avant / après.
+- **Paiements** : les séances de chaque élève sont comptées par enseignant. Le paiement est signalé à la fin du cycle (4 séances par défaut, pré-rappel à la 3ᵉ) ; l'enseignant enregistre le paiement reçu, ce qui remet le compteur à zéro.
 
 ### Automatismes
-- **Génération des séances** des groupes à partir de leurs créneaux récurrents, deux semaines à l'avance, chaque nuit à 00:15 :
-  - une séance n'est jamais créée deux fois ;
-  - une séance en conflit est ignorée et signalée.
-- **Anti-conflits garantis par PostgreSQL** : des contraintes d'exclusion (`btree_gist`) refusent deux séances actives qui se chevauchent dans la même salle ou pour le même enseignant, même si le code oubliait une vérification.
+- **Génération des séances** des groupes à partir de leurs créneaux récurrents, deux semaines à l'avance, chaque nuit : une séance n'est jamais créée deux fois, une séance en conflit est ignorée et signalée.
+- **Anti-conflits garantis par PostgreSQL** : des contraintes d'exclusion (`btree_gist`) refusent deux séances actives qui se chevauchent dans la même salle ou pour le même enseignant.
 
 ---
 
@@ -122,26 +119,26 @@ docker compose up -d app queue scheduler db mailpit
 |---|---|
 | Application | http://localhost:8010 |
 | E-mails de test (Mailpit) | http://localhost:8025 |
-| PostgreSQL local | `localhost:5433` (utilisateur `educoeur`, mot de passe `secret`) |
+| PostgreSQL local | `localhost:5433` (identifiants dans `docker-compose.yml`) |
 
 Pour recompiler le CSS automatiquement pendant le développement : `docker compose up -d vite`.
 
-> **Pourquoi `vendor/` est dans un volume Docker** : sous Windows, le partage de fichiers entre Windows et Docker est très lent pour les milliers de fichiers de `vendor/` (environ 11 s par page). Dans un volume Docker, une page s'affiche en environ 0,3 s. Le dossier `vendor/` visible sur le disque ne sert qu'à l'autocomplétion de l'éditeur ; les commandes `composer` se lancent toujours dans le conteneur.
+> **Pourquoi `vendor/` est dans un volume Docker** : sous Windows, le partage de fichiers entre Windows et Docker est très lent pour les milliers de fichiers de `vendor/`. Dans un volume Docker, une page s'affiche en environ 0,3 s. Le dossier `vendor/` visible sur le disque ne sert qu'à l'autocomplétion de l'éditeur ; les commandes `composer` se lancent toujours dans le conteneur.
 
-> **Port 8010** : le port 8000 était déjà utilisé sur la machine de développement. Il se change dans `docker-compose.yml`.
+> **Port 8010** : modifiable dans `docker-compose.yml`.
+
+> **Ne pas garder de fichier `.env.local`** (créé par exemple par `vercel env pull`) : avec `APP_ENV=local`, Laravel le chargerait à la place de `.env`.
 
 ---
 
 ## Base de données Supabase
-
-L'application utilise le projet Supabase **« Éducœur »** (région `eu-central-1`).
 
 1. Dans Supabase, ouvrir **Connect > Session pooler**.
 2. Renseigner `.env` :
 
    ```dotenv
    DB_CONNECTION=pgsql
-   DB_HOST=aws-1-eu-central-1.pooler.supabase.com
+   DB_HOST=<hôte du session pooler>
    DB_PORT=5432
    DB_DATABASE=postgres
    DB_USERNAME=postgres.<référence-du-projet>
@@ -154,58 +151,51 @@ L'application utilise le projet Supabase **« Éducœur »** (région `eu-centra
 
 Points importants :
 - **Utiliser le Session pooler (IPv4)**. La connexion directe `db.<ref>.supabase.co` est en IPv6 uniquement et n'est pas joignable depuis Docker Desktop.
-- **La RLS est activée sur toutes les tables**, sans politique. L'API REST de Supabase (clé anon) n'a donc accès à rien. Laravel, propriétaire des tables, n'est pas concerné. **Chaque nouvelle migration qui crée une table doit aussi activer la RLS.**
+- **La RLS est activée sur toutes les tables**, sans politique : l'API REST de Supabase (clé anon) n'a accès à rien. Laravel, propriétaire des tables, n'est pas concerné. **Chaque nouvelle table doit aussi activer la RLS.**
 - L'extension `btree_gist` (contraintes anti-chevauchement) est installée dans le schéma `extensions`.
-- En développement local, le cache et les sessions sont en fichiers (`CACHE_STORE=file`, `SESSION_DRIVER=file`) et les connexions sont persistantes (`DB_PERSISTENT=true`), pour limiter les allers-retours vers Supabase.
+- En développement local, le cache et les sessions sont en fichiers et les connexions sont persistantes, pour limiter les allers-retours vers Supabase.
 - Le mot de passe de la base reste uniquement dans `.env`, qui n'est jamais versionné.
 
-Pour travailler sur la base locale Docker, remettre `DB_HOST=db`, `DB_DATABASE=educoeur`, `DB_USERNAME=educoeur`, `DB_PASSWORD=secret`, `DB_SSLMODE=prefer`.
+Pour travailler sur la base locale Docker, remettre `DB_HOST=db` et les identifiants de `docker-compose.yml`, avec `DB_SSLMODE=prefer`.
 
 ---
 
 ## Déploiement sur Vercel
 
-Le site est en ligne sur **https://educoeur.vercel.app** (projet Vercel `educoeur`, région `fra1` (Francfort), la même que Supabase).
-
-Laravel tourne sur Vercel grâce au runtime communautaire [`vercel-php`](https://github.com/juicyfx/vercel-php) (PHP 8.5) :
+Laravel tourne sur Vercel grâce au runtime communautaire [`vercel-php`](https://github.com/juicyfx/vercel-php) :
 
 | Fichier | Rôle |
 |---|---|
 | `vercel.json` | Runtime PHP, région, routes (fichiers de `public/` servis directement, le reste vers Laravel), tâche planifiée, variables non secrètes |
 | `api/index.php` | Point d'entrée : place `storage` dans `/tmp`, seul dossier modifiable en serverless |
-| `.vercelignore` | Exclut `.env`, `vendor/` (réinstallé par Vercel), les tests et les fichiers Docker |
+| `.vercelignore` | Exclut les fichiers `.env*`, `vendor/` (réinstallé par Vercel), les tests et les fichiers Docker |
 
 Adaptations au fonctionnement serverless :
 - sessions en cookie, cache en base, file d'attente synchrone, journaux sur `stderr`, caches Laravel dans `/tmp` ;
 - HTTPS forcé en production, proxys de Vercel acceptés ;
 - **pas de `schedule:work`** : Vercel Cron appelle chaque nuit `/systeme/cron/seances` (protégée par `CRON_SECRET`) pour générer les séances.
 
-Les secrets (`APP_KEY` propre à la production, `DB_PASSWORD`, `CRON_SECRET`) sont des variables d'environnement **« sensitive »** du projet Vercel. Ils ne sont jamais dans le code.
+Les secrets (`APP_KEY` de production, `DB_PASSWORD`, `CRON_SECRET`) sont des variables d'environnement **« sensitive »** du projet Vercel, jamais dans le code.
 
 **Redéployer** (CSS compilé au préalable, car Vercel ne lance pas Vite) :
 
 ```bash
 docker compose run --rm --no-deps vite sh -c "npm run build"
-docker run --rm -v educoeur_vercel:/root/.local/share/com.vercel.cli -v "$PWD:/app" -w /app \
+docker run --rm -v <volume-de-la-cli-vercel>:/root/.local/share/com.vercel.cli -v "$PWD:/app" -w /app \
   node:24-alpine npx -y vercel@64.5.0 deploy --prod --yes
 ```
 
 La première fois, connecter la CLI avec `npx vercel login` (même volume Docker).
 
-Les migrations ne sont pas lancées par le déploiement : appliquer les nouvelles migrations sur Supabase depuis le poste (`docker compose exec app php artisan migrate`, avec `.env` pointé sur Supabase) **avant** de déployer le code qui en dépend.
+Les migrations ne sont pas lancées par le déploiement : mettre à jour le schéma sur Supabase **avant** de déployer le code qui en dépend. Une fois de vraies données en base, ne jamais lancer `migrate:fresh` en production.
 
 ---
 
 ## Comptes
 
-**Données de démo (base locale uniquement).** `php artisan migrate --seed` hors production crée 5 enseignants, 8 groupes, 40 élèves et 6 semaines de séances.
+**Données de démo (base locale uniquement).** `php artisan migrate --seed` hors production crée un compte admin, des enseignants, des groupes, des élèves et plusieurs semaines de séances. Les identifiants sont dans `database/seeders/DemoSeeder.php` (mot de passe `password`).
 
-| Rôle | E-mail | Mot de passe |
-|---|---|---|
-| Admin | `admin@educoeur.dz` | `password` |
-| Enseignant | `enseignant@educoeur.dz` | `password` |
-
-**Supabase.** Seules les données de référence sont installées (salles, matières, niveaux, créneaux, réglages), avec un compte admin `admin@educoeur.dz`. Les comptes enseignants se créent depuis **Admin > Enseignants**.
+**En production.** Seules les données de référence sont installées (`ReferenceDataSeeder` : salles, matières, niveaux, créneaux, réglages) et un compte admin. Les comptes enseignants se créent depuis **Admin > Enseignants**.
 
 > Changer les mots de passe par défaut avant toute mise en ligne.
 
@@ -225,7 +215,7 @@ Toutes les commandes se lancent dans le conteneur : `docker compose exec app …
 | `vendor/bin/pint` | Formate le code PHP (style Laravel) |
 | `php artisan test --compact` | Lance les tests |
 
-Le service `scheduler` exécute `php artisan schedule:work`, et le service `queue` traite la file d'attente (`php artisan queue:work`).
+Le service `scheduler` exécute `php artisan schedule:work`, et le service `queue` traite la file d'attente.
 
 ---
 
@@ -235,17 +225,14 @@ Le service `scheduler` exécute `php artisan schedule:work`, et le service `queu
 docker compose exec app php artisan test --compact
 ```
 
-- Les tests utilisent **toujours la base PostgreSQL locale** `educoeur_test`, jamais Supabase : c'est imposé dans `phpunit.xml` (`force="true"`), car les tests vident la base à chaque lancement.
-- Ils couvrent :
+- Les tests utilisent **toujours la base PostgreSQL locale** de test, jamais Supabase : c'est imposé dans `phpunit.xml` (`force="true"`), car les tests vident la base à chaque lancement.
+- Ils couvrent notamment :
   - la séparation des rôles et la connexion ;
-  - le multilingue et le RTL ;
-  - la parité des traductions FR et AR ;
-  - les contraintes anti-chevauchement ;
-  - la génération des séances ;
-  - la gestion et l'historique des enseignants, et le planning ;
-  - la page d'accueil et le formulaire d'inscription ;
-  - les numéros algériens ;
-  - les contrastes de la charte (WCAG AA).
+  - le multilingue (FR / AR / EN), le RTL et la parité des traductions ;
+  - les contraintes anti-chevauchement et la génération des séances ;
+  - l'espace enseignant : groupes, élèves, appel, journal, annulation, compteur de séances et paiements ;
+  - la page d'accueil (une seule langue par page) et le formulaire d'inscription ;
+  - les numéros algériens et les contrastes de la charte (WCAG AA).
 
 ---
 
@@ -253,31 +240,32 @@ docker compose exec app php artisan test --compact
 
 ```
 app/
-├── Actions/            Opérations métier (une classe = une action) : SaveTeacher, GenerateGroupLessons…
+├── Actions/            Opérations métier (une classe = une action) : SaveGroup, TakeAttendance, CancelLesson…
 ├── Console/Commands/   Commandes artisan (lessons:generate)
-├── Enums/              Statuts et types (séance, paiement, présence…) avec libellés traduits
-├── Http/Middleware/    SetLocale (langue), EnsureUserHasRole (séparation admin / enseignant)
+├── Enums/              Statuts et types (séance, paiement, présence, journal…) avec libellés traduits
+├── Http/Middleware/    SetLocale (langue en session), EnsureUserHasRole (séparation admin / enseignant)
 ├── Livewire/
 │   ├── Admin/          Pages de l'administration
 │   ├── Auth/           Connexion, mot de passe oublié
 │   ├── Home/           Page d'accueil et formulaire d'inscription
-│   ├── Teacher/        Espace enseignant
+│   ├── Teacher/        Espace enseignant (accueil, groupes, élèves, séances)
 │   ├── Tables/         Tableau de données réutilisable (DataTable, Column, Filter, export Excel)
 │   ├── Forms/          Formulaires Livewire (validation)
 │   └── Concerns/       WithModalForm : création / modification en modale, suppression protégée
-├── Models/             Modèles Eloquent ; Concerns/HasTranslations pour les champs FR/AR
-├── Services/           ConflictChecker (salles, enseignants, élèves)
-├── Settings/           Réglages bilingues modifiables dans l'admin (et valeurs par défaut)
-└── Support/            Format (dates, DA), Phone, OpeningHours, Catalog (cache), AdminNavigation
+├── Models/             Modèles Eloquent ; Concerns/HasTranslations pour les champs multilingues
+├── Services/           ConflictChecker (salles, enseignants, élèves), LessonCounter (séances et paiements)
+├── Settings/           Réglages multilingues modifiables dans l'admin (et valeurs par défaut)
+├── Support/            Format, Phone, OpeningHours, Catalog (cache), navigations, galerie
+└── View/Components/    Composants Blade avec classe (logo, drapeaux, sélecteur de langue…)
 
-lang/fr, lang/ar        Toutes les chaînes de l'interface (aucun texte en dur)
+lang/fr, lang/ar, lang/en   Toutes les chaînes de l'interface (aucun texte en dur)
 resources/views/
-├── components/         Mises en page (base, public, admin, enseignant, auth), logo, icônes, composants ui
+├── components/         Mises en page, logo, icônes, composants ui
 ├── home/               Sections de la page d'accueil
 ├── livewire/           Vues des composants Livewire
 └── tables/             Gabarit du tableau de données
 routes/
-├── web.php             Accueil, langues, authentification
+├── web.php             Accueil, langues, authentification, tâche planifiée
 ├── admin.php           /admin (rôle admin)
 ├── teacher.php         /enseignant (rôle enseignant)
 └── console.php         Tâches planifiées
@@ -287,14 +275,16 @@ routes/
 
 ## Conventions du projet
 
-- **Les règles métier sont dans des actions et des services**, jamais dans les composants Livewire : anti-conflits, capacité, pointage, paiements.
-- **Aucun texte en dur.** Toute chaîne passe par `lang/fr` et `lang/ar`, y compris les messages de validation et les e-mails. Un test vérifie que chaque clé existe dans les deux langues.
-- **Contenus saisis par l'admin en deux langues** : colonnes `jsonb` `{fr, ar}` avec le trait `HasTranslations`, ou réglages `Settings::text()`. Si la version arabe est vide, le texte français s'affiche.
+- **Les règles métier sont dans des actions et des services**, jamais dans les composants Livewire : anti-conflits, capacité, appel, annulation, paiements.
+- **Aucun code PHP dans les vues Blade** : pas de bloc `@php` ni de calcul. Les données sont préparées par les composants Livewire, les modèles ou des composants Blade avec classe ; la vue ne fait qu'afficher.
+- **Aucun texte en dur.** Toute chaîne passe par `lang/fr`, `lang/ar` et `lang/en`. Un test vérifie que chaque clé existe dans les trois langues.
+- **Langue** : gardée uniquement en session (français par défaut), jamais en base.
+- **Contenus saisis par l'admin dans plusieurs langues** : colonnes `jsonb` `{fr, ar, en}` avec le trait `HasTranslations`, ou réglages `Settings::text()`. Si une traduction est vide, le texte français s'affiche.
 - **RTL** : utiliser les utilitaires logiques de Tailwind (`ms-`, `me-`, `ps-`, `pe-`, `start-`, `end-`, `text-start`) et `flip-rtl` pour les flèches.
-- **Dates et montants** : passer par `App\Support\Format`. Les dates s'affichent dans la langue courante (mois algériens en arabe, par exemple جانفي), avec des chiffres occidentaux, au format `d/m/Y`, et les montants en « DA » / « دج ».
+- **Dates et montants** : passer par `App\Support\Format`. Les dates s'affichent dans la langue courante avec des chiffres occidentaux ; les montants en « DA » / « دج ».
 - **Fuseau horaire** : `Africa/Algiers`. La semaine va du dimanche au samedi.
 - **Téléphones** : stockés au format national `0555123456` via `App\Support\Phone`, et validés par la règle `AlgerianPhone`.
-- **Notifications dans l'application** : elles stockent une clé de traduction et ses paramètres, pas une phrase. Le texte est traduit à l'affichage, dans la langue de la personne qui le lit. Pas de rafraîchissement automatique (pas de `wire:poll`) : la cloche se met à jour à chaque page.
+- **Notifications dans l'application** : elles stockent une clé de traduction et ses paramètres, pas une phrase. Pas de rafraîchissement automatique (pas de `wire:poll`).
 - **Nouvelles pages de gestion** : étendre `DataTable` et utiliser `WithModalForm` (voir `Admin\Rooms\Index`, l'exemple le plus simple).
 
 ---
@@ -305,16 +295,16 @@ routes/
 |---|---|---|
 | Couleur principale (titres, boutons, en-têtes) | Vert olive `#2F5D50` | `olive-700` |
 | Éléments secondaires, fonds de cartes | Vert sauge `#8DB596` | `sage-400` |
-| Accent (cœur du logo, icônes, décor) | Terracotta `#D9774B` | `terra-500` |
+| Accent (logo, icônes, décor) | Terracotta `#D9774B` | `terra-500` |
 | Boutons d'action | Terracotta foncé `#B9572F` | `terra-600` |
 | Liens et surtitres | Terracotta profond `#9E4C2A` | `terra-700` |
 | Petites touches (badges, soulignements) | Jaune miel `#F2C14E` | `honey-400` |
 | Fond | Sable `#FAF6EE` | `sand-100` |
 | Texte principal / secondaire / aide | `#1F2A2E` / `#4F625C` / `#62716C` | `ink` / `muted` / `subtle` |
 
-- **Accessibilité** : toutes les combinaisons texte/fond respectent **WCAG AA**, et le test `tests/Unit/BrandContrastTest.php` le vérifie. Le terracotta `#D9774B` et le sauge `#8DB596` ne portent jamais de texte blanc ; on utilise les nuances plus foncées ci-dessus, ou du texte foncé.
-- **Polices** (Google Fonts) : Baloo 2 pour les titres latins, Baloo Bhaijaan 2 pour les titres arabes, Nunito pour le texte français, Cairo pour le texte arabe.
-- **Logo** : un livre ouvert dont les deux pages forment un cœur, dans `public/images/brand/`. Versions : horizontale, icône carrée, symbole seul, monochrome, et image Open Graph.
+- **Accessibilité** : toutes les combinaisons texte/fond respectent **WCAG AA**, et le test `tests/Unit/BrandContrastTest.php` le vérifie.
+- **Polices** (Google Fonts) : Baloo 2 et Baloo Bhaijaan 2 pour les titres, Nunito pour le texte latin, Cairo pour le texte arabe.
+- **Interactions** : utilitaires `card-hover`, `segmented`, `chip`, `progress`, `press`, animation `animate-fade-up`, compteurs animés.
 
 ---
 
@@ -323,13 +313,13 @@ routes/
 | Étape | Contenu | État |
 |---|---|---|
 | 1 | Logo SVG, charte en tokens Tailwind | ✅ |
-| 2 | Multilingue FR / AR et RTL | ✅ |
+| 2 | Multilingue FR / AR / EN et RTL | ✅ |
 | 3 | Modèles, migrations, seeders | ✅ |
 | 4 | Composants Livewire réutilisables, mises en page admin et enseignant | ✅ |
-| 5 | Page d'accueil (dont « Notre histoire ») | ✅ |
-| 6 | Admin : enseignants, historique et planning du tableau de bord ✅ — groupes, élèves, matières, niveaux, créneaux, grille de planning et paramètres à venir | 🚧 |
-| 7 | Espace enseignant et pointage (appel de 10 min avant le début jusqu'à la fin de la séance) | ⏳ |
-| 8 | Paiements par cycle de 4 séances, reçus PDF, alertes | ⏳ |
+| 5 | Page d'accueil | ✅ |
+| 6 | Admin : enseignants (deux tarifs), historique et planning ✅ — groupes, élèves, matières, niveaux, créneaux et paramètres à venir | 🚧 |
+| 7 | Espace enseignant : groupes, élèves, appel et pointage, journal, annulation | ✅ |
+| 8 | Paiements : compteur par cycle et signalement ✅ — reçus PDF et suivi côté admin à venir | 🚧 |
 | 9 | Absences des enseignants, remplacements et rattrapages | ⏳ |
 | 10 | Notifications (application, e-mail, SMS / WhatsApp aux parents validés par l'admin) | ⏳ |
 | 11 | PWA (manifeste, icônes, service worker, message hors ligne) | ⏳ |
