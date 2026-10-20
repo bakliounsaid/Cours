@@ -54,7 +54,10 @@ Il n'y a pas de compte élève ni parent.
 - Composants communs : tableaux avec recherche, filtres, tri, pagination et export Excel ; formulaires en modale ; confirmations et notifications « toast ».
 
 ### Espace enseignant
-- **Accueil** : séances du jour (état en direct : à venir / en cours / terminée), prochains jours, chiffres du mois, tarifs, alerte des paiements à demander.
+- **Menu latéral** (repliable sur ordinateur, tiroir sur mobile) : Tableau de bord, Séances, Programme, Groupes, Élèves.
+- **Séances** : liste à venir / passées / annulées, filtrable par groupe. **Programme** : semaine du dimanche au samedi.
+- **Notifications de paiement** dans la cloche (mises à jour à chaque page, pas en temps réel) : un élève atteint son cycle de séances ou passe en retard.
+- **Tableau de bord** : séances du jour (état en direct : à venir / en cours / terminée), prochains jours, chiffres du mois, tarifs, alerte des paiements à demander.
 - **Groupes** :
   - création, modification, archivage ; choix des créneaux avec contrôle des conflits (salle, enseignant) ;
   - le groupe est attribué à l'enseignant qui le crée, qui peut le confier à un collègue de la même matière ;
@@ -244,6 +247,7 @@ app/
 ├── Console/Commands/   Commandes artisan (lessons:generate)
 ├── Enums/              Statuts et types (séance, paiement, présence, journal…) avec libellés traduits
 ├── Http/Middleware/    SetLocale (langue en session), EnsureUserHasRole (séparation admin / enseignant)
+├── Notifications/      Notifications « application » (alerte de paiement)
 ├── Livewire/
 │   ├── Admin/          Pages de l'administration
 │   ├── Auth/           Connexion, mot de passe oublié
@@ -253,6 +257,9 @@ app/
 │   ├── Forms/          Formulaires Livewire (validation)
 │   └── Concerns/       WithModalForm : création / modification en modale, suppression protégée
 ├── Models/             Modèles Eloquent ; Concerns/HasTranslations pour les champs multilingues
+├── Repositories/
+│   ├── Contracts/      Interfaces de lecture : LessonRepository, GroupRepository, StudentRepository…
+│   └── Eloquent/       Implémentations Eloquent (reliées dans RepositoryServiceProvider)
 ├── Services/           ConflictChecker (salles, enseignants, élèves), LessonCounter (séances et paiements)
 ├── Settings/           Réglages multilingues modifiables dans l'admin (et valeurs par défaut)
 ├── Support/            Format, Phone, OpeningHours, Catalog (cache), navigations, galerie
@@ -275,7 +282,11 @@ routes/
 
 ## Conventions du projet
 
-- **Les règles métier sont dans des actions et des services**, jamais dans les composants Livewire : anti-conflits, capacité, appel, annulation, paiements.
+- **Pattern Repository** pour l'accès aux données :
+  - les **repositories** (`app/Repositories`) contiennent les requêtes de lecture. Chaque contrat (`Contracts/`) est relié à son implémentation Eloquent (`Eloquent/`) dans `RepositoryServiceProvider` ;
+  - les **composants Livewire, formulaires et services** dépendent des contrats (`app(LessonRepository::class)`), jamais d'Eloquent ni de `DB` directement ; un test le vérifie pour l'espace enseignant ;
+  - les **actions** (`app/Actions`) portent les règles métier et les écritures : anti-conflits, capacité, appel, annulation, paiements.
+- Les pages d'administration existantes (tableaux `DataTable`) seront migrées vers les repositories au fur et à mesure.
 - **Aucun code PHP dans les vues Blade** : pas de bloc `@php` ni de calcul. Les données sont préparées par les composants Livewire, les modèles ou des composants Blade avec classe ; la vue ne fait qu'afficher.
 - **Aucun texte en dur.** Toute chaîne passe par `lang/fr`, `lang/ar` et `lang/en`. Un test vérifie que chaque clé existe dans les trois langues.
 - **Langue** : gardée uniquement en session (français par défaut), jamais en base.

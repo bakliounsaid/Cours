@@ -6,6 +6,7 @@ use App\Actions\Payments\RecordPayment;
 use App\Enums\PaymentMethod;
 use App\Models\Payment;
 use App\Models\Teacher;
+use App\Repositories\Contracts\StudentRepository;
 use App\Settings\Settings;
 use Illuminate\Validation\Rule;
 use Livewire\Form;
@@ -49,7 +50,7 @@ class PaymentForm extends Form
     public function save(): Payment
     {
         $data = $this->validate();
-        $student = $this->teacher()->students()->findOrFail($this->student_id);
+        $student = app(StudentRepository::class)->findForTeacher($this->teacher(), $this->student_id);
 
         return app(RecordPayment::class)->handle($this->teacher(), $student, $data, auth()->user());
     }

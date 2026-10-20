@@ -8,10 +8,11 @@ use App\Livewire\Forms\GroupForm;
 use App\Livewire\Teacher\Concerns\ForCurrentTeacher;
 use App\Models\Group;
 use App\Models\TimeSlot;
+use App\Repositories\Contracts\GroupRepository;
+use App\Repositories\Contracts\TeacherRepository;
 use App\Support\Catalog;
 use App\Support\Format;
 use Illuminate\Contracts\View\View;
-use Illuminate\Database\Eloquent\Builder;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
 use Livewire\Component;
@@ -75,24 +76,19 @@ class Index extends Component
 
     protected function findModel(int $id): Group
     {
-        return $this->teacher->groups()->with('timeSlots')->findOrFail($id);
+        return app(GroupRepository::class)->findForTeacher($this->teacher, $id);
     }
 
     public function render(): View
     {
-        $groups = $this->teacher->groups()
-            ->with(['subject', 'level', 'room', 'timeSlots' => fn ($query) => $query->ordered()])
-            ->withCount(['students' => fn (Builder $query) => $query->where('is_active', true)])
-            ->where('is_active', $this->status !== 'archived')
-            ->when(trim($this->search) !== '', fn (Builder $query) => $query->whereLike('name', '%'.trim($this->search).'%'))
-            ->orderBy('name')
-            ->get();
+        $repository = app(GroupRepository::class);
+        $groups = $repository->forTeacher($this->teacher, active: $this->status !== 'archived', search: $this->search);
 
         return view('livewire.teacher.groups.index', [
             'groups' => $groups,
-            'archivedCount' => $this->teacher->groups()->where('is_active', false)->count(),
+            'archivedCount' => $repository->countForTeacher($this->teacher, active: false),
             'groupRate' => __('teacher.rates.group_value', ['amount' => Format::money($this->teacher->rate_group)]),
-            'subjectOptions' => $this->teacher->subjects()->ordered()->get()->pluck('name', 'id')->all(),
+            'subjectOptions' => app(TeacherRepository::class)->subjectOptions($this->teacher),
             'teacherOptions' => $this->showForm ? $this->form->teacherOptions()->all() : [],
             'assignHint' => $this->form->isForColleague() ? __('teacher.groups.assign_colleague_hint') : __('teacher.groups.assign_hint'),
             'levelOptions' => Catalog::levels()->pluck('name', 'id')->all(),

@@ -263,17 +263,6 @@
     @apply animate-shimmer rounded-xl bg-[linear-gradient(90deg,var(--color-sand-200)_25%,var(--color-sand-100)_50%,var(--color-sand-200)_75%)] bg-[length:200%_100%];
 }
 
-/* Repère sous l'onglet actif de la barre du bas */
-@utility tab-indicator {
-    position: absolute;
-    inset-block-start: 0;
-    inset-inline-start: calc(100% / var(--tabs) * var(--index) + (100% / var(--tabs) - 2rem) / 2);
-    inline-size: 2rem;
-    block-size: 3px;
-    border-radius: 0 0 9999px 9999px;
-    background: var(--color-terra-600);
-    transition: inset-inline-start 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
-}
 
 @utility input {
     @apply block w-full rounded-xl border-0 bg-white px-3.5 py-2.5 text-ink ring-1 ring-olive-400/70 transition

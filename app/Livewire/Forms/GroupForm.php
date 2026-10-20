@@ -4,9 +4,11 @@ namespace App\Livewire\Forms;
 
 use App\Actions\Groups\SaveGroup;
 use App\Models\Group;
-use App\Models\Room;
 use App\Models\Teacher;
+use App\Repositories\Contracts\GroupRepository;
+use App\Repositories\Contracts\TeacherRepository;
 use App\Services\ConflictChecker;
+use App\Support\Catalog;
 use Closure;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
@@ -44,7 +46,7 @@ class GroupForm extends ModelForm
 
         return [
             'name' => ['required', 'string', 'min:2', 'max:80'],
-            'subject_id' => ['required', Rule::in($teacher->subjects()->pluck('subjects.id')->map(fn ($id) => (string) $id)->all())],
+            'subject_id' => ['required', Rule::in(array_map('strval', app(TeacherRepository::class)->subjectIds($teacher)))],
             'teacher_id' => ['required', Rule::in($this->teacherOptions()->keys()->map(fn ($id) => (string) $id)->all())],
             'level_id' => ['required', Rule::exists('levels', 'id')],
             'room_id' => ['required', Rule::exists('rooms', 'id'), $this->roomFitsStudents(...)],
@@ -79,15 +81,15 @@ class GroupForm extends ModelForm
         $this->teacher_id = (string) $this->teacher()->id;
 
         // Une seule matière enseignée : pré-sélectionnée
-        $subjects = $this->teacher()->subjects()->pluck('subjects.id');
-        $this->subject_id = $subjects->count() === 1 ? (string) $subjects->first() : '';
+        $subjects = app(TeacherRepository::class)->subjectIds($this->teacher());
+        $this->subject_id = count($subjects) === 1 ? (string) $subjects[0] : '';
     }
 
     public function save(): Group
     {
         $data = $this->validate();
 
-        $group = $this->editingId ? $this->teacher()->groups()->findOrFail($this->editingId) : null;
+        $group = $this->editingId ? app(GroupRepository::class)->findForTeacher($this->teacher(), $this->editingId) : null;
 
         return app(SaveGroup::class)->handle($data, $group);
     }
@@ -101,13 +103,8 @@ class GroupForm extends ModelForm
     {
         $me = $this->teacher();
 
-        $colleagues = Teacher::query()
-            ->active()
-            ->whereKeyNot($me->id)
-            ->when($this->subject_id !== '', fn ($query) => $query->whereHas('subjects', fn ($subjects) => $subjects->whereKey($this->subject_id)))
-            ->with('user')
-            ->get()
-            ->sortBy('name')
+        $colleagues = app(TeacherRepository::class)
+            ->colleaguesTeaching($this->subject_id !== '' ? (int) $this->subject_id : null, $me->id)
             ->mapWithKeys(fn (Teacher $teacher) => [$teacher->id => $teacher->name]);
 
         return collect([$me->id => __('teacher.groups.me', ['name' => $me->name])])->union($colleagues);
@@ -133,8 +130,8 @@ class GroupForm extends ModelForm
             return;
         }
 
-        $capacity = min((int) Room::query()->whereKey($value)->value('capacity'), (int) config('educoeur.groups.max_students'));
-        $students = Group::query()->findOrFail($this->editingId)->students()->active()->count();
+        $capacity = min((int) Catalog::rooms()->firstWhere('id', (int) $value)?->capacity, (int) config('educoeur.groups.max_students'));
+        $students = app(GroupRepository::class)->findForTeacher($this->teacher(), $this->editingId)->activeStudentsCount();
 
         if ($students > $capacity) {
             $fail(__('teacher.groups.room_too_small', ['count' => $students, 'capacity' => $capacity]));

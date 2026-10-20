@@ -66,7 +66,12 @@
     {{-- Prochaines séances --}}
     @if ($upcoming->isNotEmpty())
         <section class="animate-fade-up [animation-delay:200ms]" aria-labelledby="upcoming-lessons">
-            <h2 id="upcoming-lessons" class="mb-3 text-lg font-bold">{{ __('teacher.today.upcoming') }}</h2>
+            <div class="mb-3 flex items-center justify-between gap-2">
+                <h2 id="upcoming-lessons" class="text-lg font-bold">{{ __('teacher.today.upcoming') }}</h2>
+                <a href="{{ route('teacher.lessons') }}" wire:navigate class="inline-flex items-center gap-1 text-sm font-bold text-terra-700 hover:underline">
+                    {{ __('teacher.today.all_lessons') }} <x-icon name="chevron-right" class="flip-rtl size-4" />
+                </a>
+            </div>
             @foreach ($upcoming as $lesson)
                 @include('livewire.teacher.partials.lesson-card', ['lesson' => $lesson, 'live' => false])
             @endforeach

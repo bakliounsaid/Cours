@@ -4,10 +4,16 @@ return [
     'space' => 'Espace enseignant',
 
     'nav' => [
-        'today' => "Aujourd'hui",
+        'dashboard' => 'Tableau de bord',
+        'lessons' => 'Séances',
+        'schedule' => 'Programme',
+        'sections' => [
+            'daily' => 'Au quotidien',
+            'management' => 'Gestion',
+            'me' => 'Moi',
+        ],
         'groups' => 'Groupes',
         'students' => 'Élèves',
-        'week' => 'Semaine',
         'absence' => 'Absence',
         'hours' => 'Mes heures',
     ],
@@ -27,6 +33,7 @@ return [
         'no_lessons' => 'Journée libre !',
         'no_lessons_hint' => 'Aucune séance prévue aujourd’hui.',
         'upcoming' => 'Prochains jours',
+        'all_lessons' => 'Toutes les séances',
         'live' => 'En cours',
         'starts_in_prefix' => 'Commence dans',
         'ended' => 'Terminée',
@@ -201,6 +208,19 @@ return [
         'not_recurring' => 'Seule une séance de groupe régulière peut être annulée définitivement.',
         'scope_once_done' => 'Annulée pour cette semaine seulement.',
         'scope_permanent_done' => 'Annulée définitivement : créneau :slot retiré du groupe.',
+    ],
+
+    'lessons_list' => [
+        'description' => 'Toutes vos séances : à venir, passées avec l’appel, et annulées.',
+        'group_filter' => 'Filtrer par groupe',
+        'all_groups' => 'Tous les groupes',
+        'empty' => 'Aucune séance ici.',
+        'not_taken' => 'Appel non fait',
+        'tabs' => [
+            'upcoming' => 'À venir',
+            'past' => 'Passées',
+            'cancelled' => 'Annulées',
+        ],
     ],
 
     'conflicts' => [

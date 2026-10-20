@@ -1,6 +1,6 @@
 <div class="space-y-5">
-    <a href="{{ route('teacher.today') }}" wire:navigate class="inline-flex items-center gap-1 text-sm font-semibold text-muted hover:text-terra-700">
-        <x-icon name="chevron-left" class="flip-rtl size-4" /> {{ __('teacher.nav.today') }}
+    <a href="{{ route('teacher.lessons') }}" wire:navigate class="inline-flex items-center gap-1 text-sm font-semibold text-muted hover:text-terra-700">
+        <x-icon name="chevron-left" class="flip-rtl size-4" /> {{ __('teacher.nav.lessons') }}
     </a>
 
     {{-- En-tête de la séance --}}
@@ -117,7 +117,7 @@
         </ul>
 
         @if ($canTake && $students->isNotEmpty())
-            <div class="sticky bottom-24 z-10 mt-3">
+            <div class="sticky bottom-4 z-10 mt-3">
                 <button type="button" wire:click="saveAttendance" wire:loading.attr="disabled" wire:target="saveAttendance" class="btn-primary w-full py-3 text-base shadow-lift">
                     <span wire:loading wire:target="saveAttendance" class="spinner"></span>
                     <x-icon name="clipboard-check" wire:loading.remove wire:target="saveAttendance" />

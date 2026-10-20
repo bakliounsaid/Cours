@@ -2,21 +2,21 @@
 
 namespace App\Livewire\Teacher\Students;
 
-use App\Enums\LessonStatus;
-use App\Enums\LessonType;
+use App\Actions\Students\FollowIndividually;
 use App\Enums\PaymentMethod;
 use App\Livewire\Concerns\WithModalForm;
 use App\Livewire\Forms\IndividualLessonForm;
 use App\Livewire\Forms\PaymentForm;
 use App\Livewire\Forms\StudentForm;
 use App\Livewire\Teacher\Concerns\ForCurrentTeacher;
-use App\Models\Lesson;
 use App\Models\Student;
+use App\Repositories\Contracts\GroupRepository;
+use App\Repositories\Contracts\LessonRepository;
+use App\Repositories\Contracts\StudentRepository;
+use App\Repositories\Contracts\TeacherRepository;
 use App\Services\LessonCounter;
 use App\Support\Catalog;
-use App\Support\LessonBalance;
 use Illuminate\Contracts\View\View;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
@@ -68,7 +68,7 @@ class Index extends Component
     public function startIndividual(int $id): void
     {
         $student = $this->findModel($id);
-        $this->teacher->individualStudents()->syncWithoutDetaching([$student->id]);
+        app(FollowIndividually::class)->start($this->teacher, $student);
 
         $this->dispatch('toast', type: 'success', message: __('teacher.students.individual_started', ['name' => $student->full_name]));
     }
@@ -76,7 +76,7 @@ class Index extends Component
     public function stopIndividual(int $id): void
     {
         $student = $this->findModel($id);
-        $this->teacher->individualStudents()->detach($student->id);
+        app(FollowIndividually::class)->stop($this->teacher, $student);
 
         $this->dispatch('toast', type: 'success', message: __('teacher.students.individual_stopped', ['name' => $student->full_name]));
     }
@@ -114,7 +114,7 @@ class Index extends Component
 
     protected function findModel(int $id): Student
     {
-        return $this->teacher->students()->findOrFail($id);
+        return app(StudentRepository::class)->findForTeacher($this->teacher, $id);
     }
 
     /** La suppression d'un élève reste réservée à l'administration. */
@@ -133,37 +133,18 @@ class Index extends Component
     public function render(): View
     {
         $teacher = $this->teacher;
-        $term = trim($this->search);
+        $repository = app(StudentRepository::class);
 
         // Compteur de séances de tous mes élèves : sert au filtre « paiement à régler » et aux cartes.
-        $balances = app(LessonCounter::class)->forTeacher($teacher, $teacher->students()->active()->pluck('students.id'));
-        $toPay = array_keys(array_filter($balances, fn (LessonBalance $balance) => $balance->status()->needsAttention()));
+        $balances = app(LessonCounter::class)->forTeacher($teacher, $repository->activeIdsForTeacher($teacher));
+        $toPay = LessonCounter::toPay($balances);
 
-        $students = $teacher->students()
-            ->active()
-            ->with(['level', 'groups' => fn ($query) => $query->where('teacher_id', $teacher->id)->where('is_active', true)])
-            ->withExists(['individualTeachers as is_individual' => fn (Builder $query) => $query->whereKey($teacher->id)])
-            ->when($term !== '', fn (Builder $query) => $query->search($term))
-            ->when($this->mode === 'group', fn (Builder $query) => $query->whereHas('groups', fn (Builder $groups) => $groups->where('teacher_id', $teacher->id)))
-            ->when($this->mode === 'individual', fn (Builder $query) => $query->whereHas('individualTeachers', fn (Builder $teachers) => $teachers->whereKey($teacher->id)))
-            ->when($this->mode === 'payment', fn (Builder $query) => $query->whereKey($toPay))
-            ->orderBy('last_name')
-            ->orderBy('first_name')
-            ->paginate(20);
+        $students = $this->mode === 'payment'
+            ? $repository->paginateForTeacher($teacher, StudentRepository::ALL, $this->search, $toPay)
+            : $repository->paginateForTeacher($teacher, $this->mode, $this->search);
 
         // Prochain cours individuel de chaque élève affiché
-        $nextLessons = Lesson::query()
-            ->where('teacher_id', $teacher->id)
-            ->where('type', LessonType::Individual)
-            ->where('status', LessonStatus::Scheduled)
-            ->where('starts_at', '>=', now())
-            ->whereHas('students', fn (Builder $query) => $query->whereIn('students.id', $students->pluck('id')))
-            ->with('students:id')
-            ->chronological()
-            ->get()
-            ->flatMap(fn (Lesson $lesson) => $lesson->students->map(fn (Student $student) => [$student->id, $lesson]))
-            ->unique(0)
-            ->mapWithKeys(fn (array $pair) => [$pair[0] => $pair[1]]);
+        $nextLessons = app(LessonRepository::class)->nextIndividualByStudent($teacher, $students->pluck('id'));
 
         $students->getCollection()->each(fn (Student $student) => $student->setRelation('nextLesson', $nextLessons->get($student->id)));
 
@@ -174,15 +155,10 @@ class Index extends Component
             'methodOptions' => PaymentMethod::options(),
             'today' => today()->toDateString(),
             'durationOptions' => [60 => '1 h', 90 => '1 h 30', 120 => '2 h'],
-            'counts' => [
-                'all' => $teacher->students()->active()->count(),
-                'group' => $teacher->students()->active()->whereHas('groups', fn (Builder $groups) => $groups->where('teacher_id', $teacher->id))->count(),
-                'individual' => $teacher->individualStudents()->where('is_active', true)->count(),
-                'payment' => count($toPay),
-            ],
+            'counts' => [...$repository->countsForTeacher($teacher), 'payment' => count($toPay)],
             'levelOptions' => Catalog::levels()->pluck('name', 'id')->all(),
-            'groupOptions' => $teacher->groups()->active()->orderBy('name')->pluck('name', 'id')->all(),
-            'subjectOptions' => $teacher->subjects()->ordered()->get()->pluck('name', 'id')->all(),
+            'groupOptions' => app(GroupRepository::class)->optionsForTeacher($teacher),
+            'subjectOptions' => app(TeacherRepository::class)->subjectOptions($teacher),
             'roomOptions' => Catalog::rooms()->pluck('name', 'id')->all(),
         ])->title(__('teacher.nav.students'));
     }

@@ -56,19 +56,6 @@ class Teacher extends Model
     }
 
     /**
-     * Ses élèves : ceux de ses groupes et ceux qu'il suit en cours individuels.
-     *
-     * @return Builder<Student>
-     */
-    public function students(): Builder
-    {
-        return Student::query()->where(function (Builder $query) {
-            $query->whereHas('groups', fn (Builder $groups) => $groups->where('teacher_id', $this->id))
-                ->orWhereHas('individualTeachers', fn (Builder $teachers) => $teachers->whereKey($this->id));
-        });
-    }
-
-    /**
      * Tarif d'une séance : individuel pour un cours particulier (ou son rattrapage /
      * remplacement hors groupe), tarif de groupe sinon.
      */

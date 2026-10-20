@@ -2,12 +2,13 @@
 
 namespace App\Livewire\Teacher;
 
-use App\Enums\LessonStatus;
 use App\Livewire\Teacher\Concerns\ForCurrentTeacher;
 use App\Models\Lesson;
+use App\Repositories\Contracts\GroupRepository;
+use App\Repositories\Contracts\LessonRepository;
+use App\Repositories\Contracts\StudentRepository;
 use App\Services\LessonCounter;
 use App\Support\Format;
-use App\Support\LessonBalance;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Layout;
@@ -25,12 +26,7 @@ class Today extends Component
     {
         $teacher = $this->teacher;
 
-        $lessons = $teacher->lessons()
-            ->with(['group.students' => fn ($query) => $query->active(), 'subject', 'room', 'students', 'checkin'])
-            ->whereBetween('starts_at', [today(), today()->addDays(7)->endOfDay()])
-            ->notCancelled()
-            ->chronological()
-            ->get();
+        $lessons = app(LessonRepository::class)->forTeacherBetween($teacher, today(), today()->addDays(7)->endOfDay());
 
         [$today, $upcoming] = $lessons->partition(fn (Lesson $lesson) => $lesson->date->isToday());
 
@@ -52,14 +48,14 @@ class Today extends Component
                 'group' => Format::money($teacher->rate_group),
                 'individual' => Format::money($teacher->rate_individual),
             ],
-        ])->title(__('teacher.nav.today'));
+        ])->title(__('teacher.nav.dashboard'));
     }
 
     /** « 3 élèves ont atteint leur cycle de séances » (null si personne). */
     private function paymentAlert(): ?string
     {
-        $balances = app(LessonCounter::class)->forTeacher($this->teacher, $this->teacher->students()->active()->pluck('students.id'));
-        $count = count(array_filter($balances, fn (LessonBalance $balance) => $balance->status()->needsAttention()));
+        $balances = app(LessonCounter::class)->forTeacher($this->teacher, app(StudentRepository::class)->activeIdsForTeacher($this->teacher));
+        $count = count(LessonCounter::toPay($balances));
 
         return $count > 0 ? trans_choice('teacher.payments.dashboard_alert', $count, ['count' => $count]) : null;
     }
@@ -72,37 +68,35 @@ class Today extends Component
     private function tiles(): array
     {
         $teacher = $this->teacher;
-        $month = [now()->startOfMonth(), now()->endOfMonth()];
+        $lessons = app(LessonRepository::class);
+        [$monthStart, $monthEnd] = [now()->startOfMonth(), now()->endOfMonth()];
 
         $tiles = [
             [
                 'label' => __('teacher.today.stats.groups'),
                 'icon' => 'user-group',
-                'value' => $teacher->groups()->active()->count(),
+                'value' => app(GroupRepository::class)->countForTeacher($teacher),
                 'unit' => null,
                 'url' => route('teacher.groups'),
             ],
             [
                 'label' => __('teacher.today.stats.students'),
                 'icon' => 'users',
-                'value' => $teacher->students()->active()->count(),
+                'value' => app(StudentRepository::class)->countsForTeacher($teacher)['all'],
                 'unit' => null,
                 'url' => route('teacher.students'),
             ],
             [
                 'label' => __('teacher.today.stats.month_lessons'),
                 'icon' => 'check-circle',
-                'value' => $teacher->lessons()
-                    ->where('status', LessonStatus::Done)
-                    ->whereBetween('date', [$month[0]->toDateString(), $month[1]->toDateString()])
-                    ->count(),
+                'value' => $lessons->doneCountForTeacher($teacher, $monthStart, $monthEnd),
                 'unit' => null,
                 'url' => null,
             ],
             [
                 'label' => __('teacher.today.stats.earned'),
                 'icon' => 'banknotes',
-                'value' => (int) $teacher->checkins()->whereBetween('checked_at', $month)->sum('rate_amount'),
+                'value' => $lessons->earnedByTeacher($teacher, $monthStart, $monthEnd),
                 'unit' => __('app.currency'),
                 'url' => null,
             ],

@@ -4,10 +4,16 @@ return [
     'space' => 'Teacher space',
 
     'nav' => [
-        'today' => 'Today',
+        'dashboard' => 'Dashboard',
+        'lessons' => 'Lessons',
+        'schedule' => 'Schedule',
+        'sections' => [
+            'daily' => 'Day to day',
+            'management' => 'Management',
+            'me' => 'Me',
+        ],
         'groups' => 'Groups',
         'students' => 'Students',
-        'week' => 'Week',
         'absence' => 'Absence',
         'hours' => 'My hours',
     ],
@@ -27,6 +33,7 @@ return [
         'no_lessons' => 'Free day!',
         'no_lessons_hint' => 'No lessons scheduled today.',
         'upcoming' => 'Coming days',
+        'all_lessons' => 'All lessons',
         'live' => 'In progress',
         'starts_in_prefix' => 'Starts in',
         'ended' => 'Finished',
@@ -201,6 +208,19 @@ return [
         'not_recurring' => 'Only a regular group lesson can be cancelled permanently.',
         'scope_once_done' => 'Cancelled for this week only.',
         'scope_permanent_done' => 'Cancelled permanently: slot :slot removed from the group.',
+    ],
+
+    'lessons_list' => [
+        'description' => 'All your lessons: upcoming, past with attendance, and cancelled.',
+        'group_filter' => 'Filter by group',
+        'all_groups' => 'All groups',
+        'empty' => 'No lessons here.',
+        'not_taken' => 'Attendance not taken',
+        'tabs' => [
+            'upcoming' => 'Upcoming',
+            'past' => 'Past',
+            'cancelled' => 'Cancelled',
+        ],
     ],
 
     'conflicts' => [

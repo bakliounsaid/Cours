@@ -10,6 +10,7 @@ use App\Livewire\Teacher\Concerns\ForCurrentTeacher;
 use App\Models\Lesson;
 use App\Models\LessonEvent;
 use App\Models\Student;
+use App\Repositories\Contracts\AttendanceRepository;
 use App\Services\LessonCounter;
 use App\Support\Format;
 use App\Support\LessonBalance;
@@ -57,7 +58,7 @@ class Show extends Component
 
         // Présences déjà saisies, sinon « présent » par défaut : on ne coche que les absents.
         // La saisie se fait côté navigateur (instantané), l'envoi au clic sur « Valider l'appel ».
-        $saved = $lesson->attendances()->pluck('status', 'student_id');
+        $saved = app(AttendanceRepository::class)->statusesForLesson($lesson);
         foreach ($lesson->roster() as $student) {
             $this->marks[$student->id] = ($saved[$student->id] ?? AttendanceStatus::Present)->value;
         }

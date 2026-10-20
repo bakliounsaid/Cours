@@ -2,17 +2,16 @@
 
 namespace App\Livewire\Forms;
 
-use App\Actions\Groups\AddStudentToGroup;
-use App\Enums\Locale;
+use App\Actions\Students\SaveStudent;
 use App\Livewire\Forms\Concerns\PrefixesActionErrors;
 use App\Models\Student;
 use App\Models\Teacher;
+use App\Repositories\Contracts\GroupRepository;
+use App\Repositories\Contracts\StudentRepository;
 use App\Rules\AlgerianPhone;
 use App\Support\Phone;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\ValidationException;
 
 /**
  * Élève saisi par un enseignant. À la création, l'élève rejoint un de ses groupes
@@ -49,7 +48,7 @@ class StudentForm extends ModelForm
             'level_id' => ['required', Rule::exists('levels', 'id')],
             'parent_phone' => ['required', 'string', new AlgerianPhone],
             'notes' => ['nullable', 'string', 'max:1000'],
-            'group_id' => ['nullable', Rule::in($this->teacher()->groups()->active()->pluck('id')->map(fn ($id) => (string) $id)->all())],
+            'group_id' => ['nullable', Rule::in(array_map('strval', array_keys(app(GroupRepository::class)->optionsForTeacher($this->teacher()))))],
             'individual' => ['boolean'],
         ];
     }
@@ -72,38 +71,16 @@ class StudentForm extends ModelForm
     public function save(): Student
     {
         $data = $this->validate();
+        $teacher = $this->teacher();
+        $students = app(StudentRepository::class);
 
-        if (! $this->isEditing() && $data['group_id'] === '' && ! $data['individual']) {
-            throw ValidationException::withMessages([
-                $this->getPropertyName().'.group_id' => __('teacher.students.assign_required'),
-            ]);
-        }
-
-        return $this->withFormErrors(fn () => DB::transaction(function () use ($data) {
-            $student = $this->editingId
-                ? $this->teacher()->students()->findOrFail($this->editingId)
-                : new Student(['enrolled_at' => today()->toDateString(), 'is_active' => true, 'parent_locale' => Locale::default()]);
-
-            $student->fill([
-                'first_name' => trim($data['first_name']),
-                'last_name' => trim($data['last_name']),
-                'level_id' => (int) $data['level_id'],
-                'parent_phone' => Phone::normalize($data['parent_phone']),
-                'notes' => filled($data['notes']) ? trim($data['notes']) : null,
-            ])->save();
-
-            if (! $this->isEditing()) {
-                if ($data['group_id'] !== '') {
-                    app(AddStudentToGroup::class)->handle($this->teacher()->groups()->findOrFail($data['group_id']), $student);
-                }
-
-                if ($data['individual']) {
-                    $this->teacher()->individualStudents()->syncWithoutDetaching([$student->id]);
-                }
-            }
-
-            return $student;
-        }));
+        return $this->withFormErrors(fn () => app(SaveStudent::class)->handle(
+            $teacher,
+            $data,
+            student: $this->editingId ? $students->findForTeacher($teacher, $this->editingId) : null,
+            group: ! $this->isEditing() && $data['group_id'] !== '' ? app(GroupRepository::class)->findForTeacher($teacher, $data['group_id']) : null,
+            individual: ! $this->isEditing() && $data['individual'],
+        ));
     }
 
     private function teacher(): Teacher

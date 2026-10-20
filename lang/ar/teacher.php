@@ -4,10 +4,16 @@ return [
     'space' => 'فضاء الأستاذ',
 
     'nav' => [
-        'today' => 'اليوم',
+        'dashboard' => 'لوحة القيادة',
+        'lessons' => 'الحصص',
+        'schedule' => 'البرنامج',
+        'sections' => [
+            'daily' => 'اليومي',
+            'management' => 'التسيير',
+            'me' => 'حسابي',
+        ],
         'groups' => 'الأفواج',
         'students' => 'التلاميذ',
-        'week' => 'الأسبوع',
         'absence' => 'غياب',
         'hours' => 'ساعاتي',
     ],
@@ -27,6 +33,7 @@ return [
         'no_lessons' => 'يوم حر!',
         'no_lessons_hint' => 'لا توجد أي حصة مبرمجة اليوم.',
         'upcoming' => 'الأيام القادمة',
+        'all_lessons' => 'كل الحصص',
         'live' => 'جارية الآن',
         'starts_in_prefix' => 'تبدأ بعد',
         'ended' => 'انتهت',
@@ -201,6 +208,19 @@ return [
         'not_recurring' => 'لا يمكن الإلغاء النهائي إلا لحصة فوج منتظمة.',
         'scope_once_done' => 'أُلغيت لهذا الأسبوع فقط.',
         'scope_permanent_done' => 'أُلغيت نهائياً: سُحب التوقيت :slot من الفوج.',
+    ],
+
+    'lessons_list' => [
+        'description' => 'كل حصصك: القادمة، والسابقة مع الحضور، والملغاة.',
+        'group_filter' => 'تصفية حسب الفوج',
+        'all_groups' => 'كل الأفواج',
+        'empty' => 'لا توجد حصص هنا.',
+        'not_taken' => 'لم يُسجَّل الحضور',
+        'tabs' => [
+            'upcoming' => 'القادمة',
+            'past' => 'السابقة',
+            'cancelled' => 'الملغاة',
+        ],
     ],
 
     'conflicts' => [

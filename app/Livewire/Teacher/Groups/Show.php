@@ -3,19 +3,19 @@
 namespace App\Livewire\Teacher\Groups;
 
 use App\Actions\Groups\AddStudentToGroup;
-use App\Enums\AttendanceStatus;
-use App\Enums\LessonStatus;
+use App\Actions\Groups\RemoveStudentFromGroup;
 use App\Livewire\Concerns\WithModalForm;
 use App\Livewire\Forms\StudentForm;
 use App\Livewire\Teacher\Concerns\ForCurrentTeacher;
 use App\Models\Group;
 use App\Models\Lesson;
 use App\Models\Student;
+use App\Repositories\Contracts\LessonRepository;
+use App\Repositories\Contracts\StudentRepository;
 use App\Services\LessonCounter;
 use App\Support\Catalog;
 use App\Support\Format;
 use Illuminate\Contracts\View\View;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -59,7 +59,7 @@ class Show extends Component
 
     public function addStudent(int $studentId): void
     {
-        $student = Student::query()->active()->findOrFail($studentId);
+        $student = app(StudentRepository::class)->findActive($studentId);
 
         try {
             app(AddStudentToGroup::class)->handle($this->group, $student);
@@ -75,8 +75,8 @@ class Show extends Component
 
     public function removeStudent(int $studentId): void
     {
-        $student = $this->group->students()->findOrFail($studentId);
-        $this->group->students()->detach($student->id);
+        $student = $this->findModel($studentId);
+        app(RemoveStudentFromGroup::class)->handle($this->group, $student);
 
         $this->dispatch('toast', type: 'success', message: __('teacher.groups.student_removed', ['name' => $student->full_name]));
     }
@@ -87,9 +87,10 @@ class Show extends Component
         $this->removeStudent($id);
     }
 
+    /** Élève de ce groupe, sinon 404. */
     protected function findModel(int $id): Student
     {
-        return $this->group->students()->findOrFail($id);
+        return app(StudentRepository::class)->findInGroup($this->group, $id);
     }
 
     protected function performDelete(Model $model): void
@@ -104,16 +105,7 @@ class Show extends Component
      */
     private function history(): Collection
     {
-        return $this->group->lessons()
-            ->with('checkin')
-            ->withCount([
-                'attendances',
-                'attendances as present_count' => fn (Builder $query) => $query->whereIn('status', [AttendanceStatus::Present, AttendanceStatus::Late]),
-            ])
-            ->where('starts_at', '<', now())
-            ->orderByDesc('starts_at')
-            ->limit(10)
-            ->get()
+        return app(LessonRepository::class)->pastForGroup($this->group)
             ->map(fn (Lesson $lesson) => [
                 'date' => Format::dayDate($lesson->date),
                 'time' => Format::timeRange($lesson->starts_at, $lesson->ends_at),
@@ -132,18 +124,11 @@ class Show extends Component
     {
         $this->group->load(['subject', 'level', 'room', 'timeSlots' => fn ($query) => $query->ordered()]);
 
-        $students = $this->group->students()->active()->with('level')->orderBy('last_name')->orderBy('first_name')->get();
+        $students = app(StudentRepository::class)->rosterOfGroup($this->group);
         $term = trim($this->studentSearch);
 
         $candidates = mb_strlen($term) >= 2
-            ? Student::query()->active()->search($term)
-                ->whereDoesntHave('groups', fn (Builder $query) => $query->whereKey($this->group->id))
-                ->with('level')
-                // Les élèves du niveau du groupe d'abord
-                ->orderByRaw('case when level_id = ? then 0 else 1 end', [$this->group->level_id])
-                ->orderBy('last_name')
-                ->limit(8)
-                ->get()
+            ? app(StudentRepository::class)->candidatesForGroup($this->group, $term)
             : collect();
 
         $capacity = $this->group->capacity();
@@ -158,13 +143,7 @@ class Show extends Component
             // Jauge circulaire : longueur du trait sur une circonférence de 97,4 (r = 15,5)
             'gauge' => $capacity > 0 ? round(min(1, $students->count() / $capacity) * 97.4, 1) : 0,
             'showSearchResults' => mb_strlen($term) >= 2,
-            'nextLessons' => $this->group->lessons()
-                ->with('room')
-                ->where('starts_at', '>=', now())
-                ->where('status', '!=', LessonStatus::Cancelled)
-                ->chronological()
-                ->limit(3)
-                ->get(),
+            'nextLessons' => app(LessonRepository::class)->upcomingForGroup($this->group),
             'history' => $this->history(),
             'levelOptions' => Catalog::levels()->pluck('name', 'id')->all(),
         ])->title($this->group->name);
