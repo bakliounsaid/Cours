@@ -4,7 +4,7 @@ namespace App\Support;
 
 /**
  * Photos de l'école (public/images/histoire), en WebP avec un JPEG de secours.
- * La première est mise en avant : la nouvelle salle fraîchement repeinte.
+ * La première est la nouvelle salle fraîchement repeinte.
  */
 class SchoolGallery
 {
@@ -30,11 +30,5 @@ class SchoolGallery
             'height' => $photo[2],
             'caption' => __('home.gallery.captions.'.str_replace('-', '_', $photo[0])),
         ], self::PHOTOS);
-    }
-
-    /** Photo mise en avant (en tête de page). */
-    public static function featured(): array
-    {
-        return self::photos()[0];
     }
 }

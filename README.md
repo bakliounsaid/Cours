@@ -34,7 +34,7 @@ Il n'y a pas de compte élève ni parent.
 ## Fonctionnalités
 
 ### Site public
-- Accroche avec une photo mise en avant, atouts de l'école, section « Notre histoire » avec ses missions et une galerie de petites photos (agrandies au clic).
+- Accroche avec un visuel simple (logo et trois atouts), atouts de l'école, section « Notre histoire » avec ses missions et une galerie de petites photos (agrandies au clic).
 - Matières, niveaux, formules (groupe ou individuel).
 - **Horaires calculés automatiquement** à partir des créneaux de l'admin.
 - Contact, carte OpenStreetMap (Leaflet) et bouton WhatsApp.

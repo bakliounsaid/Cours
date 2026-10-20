@@ -35,30 +35,23 @@
             </ul>
         </div>
 
-        {{-- Photo mise en avant : notre nouvelle salle fraîchement repeinte --}}
-        <div x-reveal="200" class="relative mx-auto w-full max-w-md">
-            <div aria-hidden="true" class="absolute -inset-4 rotate-3 rounded-[2.5rem] bg-gradient-to-br from-terra-200 via-honey-200 to-sage-200"></div>
-            <figure class="group relative overflow-hidden rounded-[2rem] bg-white p-2 shadow-lift ring-1 ring-olive-100">
-                <picture>
-                    <source srcset="{{ $featuredPhoto['webp'] }}" type="image/webp">
-                    <img src="{{ $featuredPhoto['jpg'] }}" width="{{ $featuredPhoto['width'] }}" height="{{ $featuredPhoto['height'] }}"
-                         alt="{{ $featuredPhoto['caption'] }}" fetchpriority="high"
-                         class="aspect-[4/5] w-full rounded-[1.6rem] object-cover transition duration-700 group-hover:scale-[1.03]">
-                </picture>
-                <figcaption class="absolute inset-x-2 bottom-2 rounded-b-[1.6rem] bg-gradient-to-t from-olive-900/80 to-transparent px-5 pt-12 pb-4 font-display text-lg font-bold text-white">
-                    {{ $featuredPhoto['caption'] }}
-                </figcaption>
-            </figure>
+        {{-- Visuel simple : le cœur-livre sur une forme douce et trois atouts --}}
+        <div x-reveal="200" class="relative mx-auto aspect-square w-full max-w-md" aria-hidden="true">
+            <div class="absolute inset-6 rounded-[42%_58%_55%_45%/48%_42%_58%_52%] bg-gradient-to-br from-terra-200 via-terra-100 to-honey-200"></div>
+            <div class="absolute inset-16 rounded-full bg-sand-50/70"></div>
+            <div class="absolute inset-0 flex items-center justify-center">
+                <x-brand.mark class="size-56 animate-float drop-shadow-xl sm:size-64" />
+            </div>
 
-            <div aria-hidden="true" class="absolute -start-6 top-10 flex animate-float items-center gap-2.5 rounded-2xl bg-white px-4 py-3 shadow-lift [animation-delay:-2s]">
+            <div class="absolute start-0 top-10 flex animate-float items-center gap-2.5 rounded-2xl bg-white px-4 py-3 shadow-lift [animation-delay:-2s]">
                 <span class="flex size-8 items-center justify-center rounded-full bg-emerald-100 text-emerald-600"><x-icon name="check" class="size-4" /></span>
                 <span class="text-sm font-bold text-olive-700">{{ __('home.hero.card_attendance') }}</span>
             </div>
-            <div aria-hidden="true" class="absolute -end-6 top-1/2 flex animate-float items-center gap-2.5 rounded-2xl bg-white px-4 py-3 shadow-lift [animation-delay:-4s]">
+            <div class="absolute end-0 top-1/2 flex animate-float items-center gap-2.5 rounded-2xl bg-white px-4 py-3 shadow-lift [animation-delay:-4s]">
                 <span class="flex size-8 items-center justify-center rounded-full bg-honey-100 text-honey-700"><x-icon name="star" class="size-4" /></span>
                 <span class="text-sm font-bold text-olive-700">{{ __('home.hero.card_progress') }}</span>
             </div>
-            <div aria-hidden="true" class="absolute -start-4 bottom-20 hidden animate-float items-center gap-2.5 rounded-2xl bg-white px-4 py-3 shadow-lift [animation-delay:-1s] sm:flex">
+            <div class="absolute start-8 bottom-6 flex animate-float items-center gap-2.5 rounded-2xl bg-white px-4 py-3 shadow-lift [animation-delay:-1s]">
                 <span class="flex size-8 items-center justify-center rounded-full bg-terra-100 text-terra-700"><x-icon name="chat" class="size-4" /></span>
                 <span class="text-sm font-bold text-olive-700">{{ __('home.hero.card_parents') }}</span>
             </div>

@@ -53,7 +53,6 @@ class HomePage extends Component
                 ['icon' => 'user-group', 'label' => __('home.hero.chip_groups')],
                 ['icon' => 'academic-cap', 'label' => __('home.hero.chip_levels')],
             ],
-            'featuredPhoto' => SchoolGallery::featured(),
             'gallery' => SchoolGallery::photos(),
             'heroTitle' => $settings->text('home.hero_title'),
             'heroTagline' => $settings->text('home.hero_tagline'),
