@@ -172,7 +172,7 @@ Laravel tourne sur Vercel grâce au runtime communautaire [`vercel-php`](https:/
 |---|---|
 | `vercel.json` | Runtime PHP, région, routes (fichiers de `public/` servis directement, le reste vers Laravel), tâche planifiée, variables non secrètes |
 | `api/index.php` | Point d'entrée : place `storage` dans `/tmp`, seul dossier modifiable en serverless |
-| `.vercelignore` | Exclut les fichiers `.env*`, `vendor/` (réinstallé par Vercel), les tests et les fichiers Docker |
+| `.vercelignore` | Exclut les fichiers `.env*`, `vendor/` (réinstallé par Vercel), `public/build` (recompilé par Vercel), les tests et les fichiers Docker |
 
 Adaptations au fonctionnement serverless :
 - sessions en cookie, cache en base, file d'attente synchrone, journaux sur `stderr`, caches Laravel dans `/tmp` ;
@@ -181,12 +181,12 @@ Adaptations au fonctionnement serverless :
 
 Les secrets (`APP_KEY` de production, `DB_PASSWORD`, `CRON_SECRET`) sont des variables d'environnement **« sensitive »** du projet Vercel, jamais dans le code.
 
-**Redéployer** (CSS compilé au préalable, car Vercel ne lance pas Vite) :
+**Déploiement automatique** : le projet Vercel est relié au dépôt GitHub. Chaque push sur `main` déploie en production, les autres branches donnent un déploiement de prévisualisation. Vercel compile lui-même le CSS et le JavaScript (`npm ci` puis `npm run build`, voir `vercel.json`).
+
+**Déploiement manuel** (sans passer par Git) :
 
 ```bash
-docker compose run --rm --no-deps vite sh -c "npm run build"
-docker run --rm -v <volume-de-la-cli-vercel>:/root/.local/share/com.vercel.cli -v "$PWD:/app" -w /app \
-  node:24-alpine npx -y vercel@64.5.0 deploy --prod --yes
+docker run --rm -v <volume-de-la-cli-vercel>:/root/.local/share/com.vercel.cli -v "$PWD:/app" -w /app   node:24-alpine npx -y vercel@64.5.0 deploy --prod --yes
 ```
 
 La première fois, connecter la CLI avec `npx vercel login` (même volume Docker).

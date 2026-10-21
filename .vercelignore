@@ -15,6 +15,8 @@
 /storage/logs/*
 /bootstrap/cache/*.php
 /public/hot
+# Compilé par Vercel (npm run build) à chaque déploiement, comme depuis Git
+/public/build
 /public/storage
 *.log
 phpunit.xml
