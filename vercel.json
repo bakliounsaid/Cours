@@ -16,6 +16,8 @@
     "routes": [
         { "src": "/", "dest": "/api/index.php" },
         { "src": "/(.*\\.php|\\.htaccess)", "dest": "/api/index.php" },
+        { "src": "/sw.js", "headers": { "cache-control": "no-cache", "service-worker-allowed": "/" }, "continue": true },
+        { "src": "/manifest.webmanifest", "headers": { "content-type": "application/manifest+json", "cache-control": "public, max-age=3600" }, "continue": true },
         { "handle": "filesystem" },
         { "src": "/(.*)", "dest": "/api/index.php" }
     ],

@@ -72,6 +72,11 @@ Il n'y a pas de compte élève ni parent.
 - **Traçabilité** : chaque action sur une séance (appel, correction des présences, travail saisi, annulation) est inscrite dans un journal non modifiable, avec son auteur, sa date et les valeurs avant / après.
 - **Paiements** : les séances de chaque élève sont comptées par enseignant. Le paiement est signalé à la fin du cycle (4 séances par défaut, pré-rappel à la 3ᵉ) ; l'enseignant enregistre le paiement reçu, ce qui remet le compteur à zéro.
 
+### Application installable (PWA)
+- Installable sur téléphone et ordinateur (`public/manifest.webmanifest`, icônes dans `public/images/pwa`) ; à l'ouverture, chacun arrive dans son espace (admin ou enseignant).
+- Bouton « Installer l'application » dans le menu du profil quand le navigateur le permet (sur iPhone : Partager → Sur l'écran d'accueil).
+- Service worker (`public/sw.js`) : pages toujours chargées depuis le réseau (aucune donnée connectée en cache), CSS / JS / images / polices en cache ; hors connexion, page `public/offline.html` dans la dernière langue utilisée.
+
 ### Automatismes
 - **Génération des séances** des groupes à partir de leurs créneaux récurrents, deux semaines à l'avance, chaque nuit : une séance n'est jamais créée deux fois, une séance en conflit est ignorée et signalée.
 - **Anti-conflits garantis par PostgreSQL** : des contraintes d'exclusion (`btree_gist`) refusent deux séances actives qui se chevauchent dans la même salle ou pour le même enseignant.
@@ -334,4 +339,4 @@ routes/
 | 8 | Paiements : compteur par cycle et signalement ✅ — reçus PDF et suivi côté admin à venir | 🚧 |
 | 9 | Absences des enseignants, remplacements et rattrapages | ⏳ |
 | 10 | Notifications (application, e-mail, SMS / WhatsApp aux parents validés par l'admin) | ⏳ |
-| 11 | PWA (manifeste, icônes, service worker, message hors ligne) | ⏳ |
+| 11 | PWA : manifeste, icônes, service worker, page hors connexion, bouton « Installer l’application » ✅ — notifications push à venir | 🚧 |

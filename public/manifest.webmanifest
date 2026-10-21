@@ -1,0 +1,32 @@
+{
+    "id": "/",
+    "name": "Éducœur",
+    "short_name": "Éducœur",
+    "description": "Espace enseignant et administration : séances, appel, élèves et paiements.",
+    "lang": "fr",
+    "dir": "auto",
+    "start_url": "/connexion?source=pwa",
+    "scope": "/",
+    "display": "standalone",
+    "orientation": "portrait",
+    "background_color": "#FAF6EE",
+    "theme_color": "#2F5D50",
+    "categories": ["education", "productivity"],
+    "icons": [
+        { "src": "/images/pwa/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+        { "src": "/images/pwa/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+        { "src": "/images/pwa/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    ],
+    "shortcuts": [
+        {
+            "name": "Mes séances",
+            "url": "/enseignant/seances",
+            "icons": [{ "src": "/images/pwa/icon-192.png", "sizes": "192x192" }]
+        },
+        {
+            "name": "Mon programme",
+            "url": "/enseignant/programme",
+            "icons": [{ "src": "/images/pwa/icon-192.png", "sizes": "192x192" }]
+        }
+    ]
+}

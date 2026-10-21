@@ -59,6 +59,7 @@
                             <p class="font-bold text-ink">{{ auth()->user()->name }}</p>
                             <p class="truncate text-xs text-subtle" dir="ltr">{{ auth()->user()->email }}</p>
                         </div>
+                        <x-install-app-button />
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button type="submit" class="menu-item">

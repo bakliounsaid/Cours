@@ -8,6 +8,7 @@ return [
     'currency' => 'DA',
     'switch_language' => 'Switch to :language',
     'choose_language' => 'Choose language',
+    'install' => 'Install the app',
     'offline' => 'Connection lost. You can continue as soon as the network is back.',
     'back_online' => 'Connection restored.',
     'close' => 'Close',

@@ -8,6 +8,7 @@ return [
     'currency' => 'DA',
     'switch_language' => 'Passer en :language',
     'choose_language' => 'Choisir la langue',
+    'install' => 'Installer l’application',
     'offline' => 'Connexion perdue. Vos actions seront possibles dès le retour du réseau.',
     'back_online' => 'Connexion rétablie.',
     'close' => 'Fermer',

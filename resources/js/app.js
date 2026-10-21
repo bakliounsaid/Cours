@@ -108,3 +108,47 @@ window.educoeurMap = async (el, latitude, longitude, label) => {
 
     L.marker([latitude, longitude], { icon, title: label }).addTo(map).bindPopup(`<strong>Éducœur</strong><br>${label}`);
 };
+
+/*
+ * PWA : enregistrement du service worker et installation de l'application.
+ */
+try {
+    // Langue de la page hors connexion (public/offline.html)
+    localStorage.setItem('educoeur-locale', document.documentElement.lang);
+} catch (error) {
+    // Stockage indisponible (navigation privée) : la page hors connexion restera en français
+}
+
+if ('serviceWorker' in navigator && window.isSecureContext) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
+}
+
+/**
+ * Bouton « Installer l'application » : le navigateur propose l'installation via
+ * l'événement beforeinstallprompt (Chrome, Edge, Android). Sur iPhone, passer par « Partager ».
+ */
+window.educoeurInstall = { prompt: null };
+
+window.addEventListener('beforeinstallprompt', (event) => {
+    event.preventDefault();
+    window.educoeurInstall.prompt = event;
+    window.dispatchEvent(new CustomEvent('educoeur:installable'));
+});
+
+window.addEventListener('appinstalled', () => {
+    window.educoeurInstall.prompt = null;
+    window.dispatchEvent(new CustomEvent('educoeur:installed'));
+});
+
+window.educoeurInstallApp = async () => {
+    const prompt = window.educoeurInstall.prompt;
+
+    if (!prompt) {
+        return;
+    }
+
+    prompt.prompt();
+    await prompt.userChoice;
+    window.educoeurInstall.prompt = null;
+    window.dispatchEvent(new CustomEvent('educoeur:installed'));
+};

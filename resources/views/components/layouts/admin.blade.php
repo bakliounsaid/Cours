@@ -82,6 +82,7 @@
                             <p class="truncate text-xs text-subtle" dir="ltr">{{ auth()->user()->email }}</p>
                             <x-ui.badge class="mt-1.5" color="bg-terra-50 text-terra-700">{{ auth()->user()->role->label() }}</x-ui.badge>
                         </div>
+                        <x-install-app-button />
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button type="submit" class="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-muted hover:bg-sand-100">

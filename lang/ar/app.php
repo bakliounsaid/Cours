@@ -8,6 +8,7 @@ return [
     'currency' => 'دج',
     'switch_language' => 'التبديل إلى :language',
     'choose_language' => 'اختيار اللغة',
+    'install' => 'تثبيت التطبيق',
     'offline' => 'انقطع الاتصال. ستتمكن من المتابعة فور عودة الشبكة.',
     'back_online' => 'عاد الاتصال.',
     'close' => 'إغلاق',
