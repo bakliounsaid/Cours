@@ -26,4 +26,12 @@ interface TeacherRepository
      * @return list<int>
      */
     public function subjectIds(Teacher $teacher): array;
+
+    /**
+     * Enseignants (avec leur compte) indexés par id.
+     *
+     * @param  list<int>  $ids
+     * @return Collection<int, Teacher>
+     */
+    public function findManyKeyed(array $ids): Collection;
 }

@@ -94,3 +94,11 @@ it('notifie l’enseignant une seule fois quand un élève atteint son cycle', f
 
     $this->get(route('teacher.today'))->assertSee(__('notifications.payment_due', ['name' => $student->full_name, 'count' => 4]));
 });
+
+it('met en avant le planning de la semaine sur le tableau de bord', function () {
+    lessonAt('2026-11-05 17:00', ['title' => 'Séance de jeudi']);
+
+    $this->get(route('teacher.today'))
+        ->assertOk()
+        ->assertSeeInOrder([__('teacher.today.planning'), 'Séance de jeudi', __('teacher.today.lessons')]);
+});

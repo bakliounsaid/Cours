@@ -3,7 +3,7 @@
 namespace App\Livewire\Teacher;
 
 use App\Livewire\Teacher\Concerns\ForCurrentTeacher;
-use App\Models\Lesson;
+use App\Livewire\Teacher\Concerns\WithWeekPlanning;
 use App\Repositories\Contracts\GroupRepository;
 use App\Repositories\Contracts\LessonRepository;
 use App\Repositories\Contracts\StudentRepository;
@@ -15,20 +15,19 @@ use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 /**
- * Accueil de l'espace enseignant : séances du jour, chiffres clés et tarifs.
+ * Tableau de bord de l'enseignant : planning de la semaine mis en avant, séances du jour,
+ * chiffres clés et tarifs.
  */
 #[Layout('components.layouts.teacher')]
 class Today extends Component
 {
-    use ForCurrentTeacher;
+    use ForCurrentTeacher, WithWeekPlanning;
 
     public function render(): View
     {
         $teacher = $this->teacher;
 
-        $lessons = app(LessonRepository::class)->forTeacherBetween($teacher, today(), today()->addDays(7)->endOfDay());
-
-        [$today, $upcoming] = $lessons->partition(fn (Lesson $lesson) => $lesson->date->isToday());
+        $today = app(LessonRepository::class)->forTeacherBetween($teacher, today(), today()->endOfDay());
 
         $greeting = match (true) {
             now()->hour < 12 => __('teacher.today.morning'),
@@ -37,8 +36,8 @@ class Today extends Component
         };
 
         return view('livewire.teacher.today', [
-            'today' => $today->values(),
-            'upcoming' => $upcoming->take(5)->values(),
+            'today' => $today,
+            'planning' => $this->planning(),
             'title' => $greeting.', '.Str::before(auth()->user()->name, ' '),
             'date' => Format::dayDate(now(), withYear: true),
             'summary' => trans_choice('teacher.today.summary', $today->count(), ['count' => $today->count()]),

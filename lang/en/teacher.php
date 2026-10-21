@@ -32,7 +32,7 @@ return [
         'lessons' => 'My lessons today',
         'no_lessons' => 'Free day!',
         'no_lessons_hint' => 'No lessons scheduled today.',
-        'upcoming' => 'Coming days',
+        'planning' => 'My weekly schedule',
         'all_lessons' => 'All lessons',
         'live' => 'In progress',
         'starts_in_prefix' => 'Starts in',

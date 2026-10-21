@@ -26,6 +26,11 @@ class EloquentTeacherRepository implements TeacherRepository
         return $teacher->subjects()->ordered()->get()->pluck('name', 'id')->all();
     }
 
+    public function findManyKeyed(array $ids): Collection
+    {
+        return $ids === [] ? collect() : Teacher::query()->with('user')->whereKey($ids)->get()->keyBy('id');
+    }
+
     public function subjectIds(Teacher $teacher): array
     {
         return $teacher->subjects()->pluck('subjects.id')->map(fn ($id) => (int) $id)->all();

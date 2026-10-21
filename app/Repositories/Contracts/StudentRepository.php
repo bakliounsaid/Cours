@@ -6,6 +6,7 @@ use App\Models\Group;
 use App\Models\Student;
 use App\Models\Teacher;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 
 /**
@@ -56,6 +57,19 @@ interface StudentRepository
     public function candidatesForGroup(Group $group, string $search, int $limit = 8): Collection;
 
     public function findActive(int $id): Student;
+
+    /**
+     * Requête du tableau « Élèves » de l'admin : niveau, groupes et compteurs de présence
+     * (attended_count : présent ou en retard, absent_count).
+     *
+     * @return Builder<Student>
+     */
+    public function adminTableQuery(): Builder;
+
+    /** Fiche complète d'un élève : niveau, groupes (matière, enseignant), enseignants en individuel. */
+    public function findWithDetails(int|string $id): Student;
+
+    public function activeCount(): int;
 
     /** Élève inscrit dans ce groupe, sinon 404. */
     public function findInGroup(Group $group, int|string $id): Student;

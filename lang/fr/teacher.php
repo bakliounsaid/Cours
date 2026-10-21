@@ -32,7 +32,7 @@ return [
         'lessons' => 'Mes séances du jour',
         'no_lessons' => 'Journée libre !',
         'no_lessons_hint' => 'Aucune séance prévue aujourd’hui.',
-        'upcoming' => 'Prochains jours',
+        'planning' => 'Mon planning de la semaine',
         'all_lessons' => 'Toutes les séances',
         'live' => 'En cours',
         'starts_in_prefix' => 'Commence dans',

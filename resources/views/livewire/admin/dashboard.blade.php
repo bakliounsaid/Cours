@@ -8,7 +8,8 @@
         <x-ui.stat-card :label="__('admin.dashboard.today_lessons')" :value="$stats['today']" icon="calendar-days" tone="navy" />
         <x-ui.stat-card :label="__('admin.dashboard.active_teachers')" :value="$stats['teachers']" icon="academic-cap" tone="green"
                         :href="route('admin.teachers')" />
-        <x-ui.stat-card :label="__('admin.dashboard.active_students')" :value="$stats['students']" icon="users" tone="sun" />
+        <x-ui.stat-card :label="__('admin.dashboard.active_students')" :value="$stats['students']" icon="users" tone="sun"
+                        :href="route('admin.students.index')" />
         <x-ui.stat-card :label="__('admin.dashboard.new_enrollments')" :value="$stats['enrollments']" icon="inbox" tone="coral" />
     </div>
 

@@ -143,11 +143,14 @@ class Student extends Model
             return;
         }
 
-        $query->where(function (Builder $query) use ($term) {
+        // Sans chiffre dans la recherche, pas de filtre sur le téléphone (sinon « LIKE '%%' » renvoie tout).
+        $digits = preg_replace('/\D/', '', $term);
+
+        $query->where(function (Builder $query) use ($term, $digits) {
             $query->whereLike('first_name', "%{$term}%")
                 ->orWhereLike('last_name', "%{$term}%")
                 ->orWhereRaw("concat(first_name, ' ', last_name) ilike ?", ["%{$term}%"])
-                ->orWhereLike('parent_phone', '%'.preg_replace('/\D/', '', $term).'%');
+                ->when($digits !== '', fn (Builder $query) => $query->orWhereLike('parent_phone', "%{$digits}%"));
         });
     }
 }

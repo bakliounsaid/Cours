@@ -36,17 +36,8 @@
         </a>
     @endif
 
-    {{-- Raccourcis --}}
-    <section class="animate-fade-up grid grid-cols-2 gap-3 [animation-delay:80ms]">
-        <a href="{{ route('teacher.groups', ['nouveau' => 1]) }}" wire:navigate class="card card-hover flex items-center gap-3 p-4">
-            <span class="flex size-11 items-center justify-center rounded-2xl bg-terra-50 text-terra-700"><x-icon name="plus" /></span>
-            <span class="text-sm font-bold text-olive-700">{{ __('teacher.groups.add') }}</span>
-        </a>
-        <a href="{{ route('teacher.students', ['nouveau' => 1]) }}" wire:navigate class="card card-hover flex items-center gap-3 p-4">
-            <span class="flex size-11 items-center justify-center rounded-2xl bg-honey-100 text-honey-700"><x-icon name="user" /></span>
-            <span class="text-sm font-bold text-olive-700">{{ __('teacher.students.add') }}</span>
-        </a>
-    </section>
+    {{-- Planning de la semaine, mis en avant --}}
+    @include('livewire.teacher.partials.week-planning', ['planning' => $planning, 'title' => __('teacher.today.planning')])
 
     {{-- Séances du jour --}}
     <section class="animate-fade-up [animation-delay:140ms]" aria-labelledby="today-lessons">
@@ -63,20 +54,23 @@
         @endforelse
     </section>
 
-    {{-- Prochaines séances --}}
-    @if ($upcoming->isNotEmpty())
-        <section class="animate-fade-up [animation-delay:200ms]" aria-labelledby="upcoming-lessons">
-            <div class="mb-3 flex items-center justify-between gap-2">
-                <h2 id="upcoming-lessons" class="text-lg font-bold">{{ __('teacher.today.upcoming') }}</h2>
-                <a href="{{ route('teacher.lessons') }}" wire:navigate class="inline-flex items-center gap-1 text-sm font-bold text-terra-700 hover:underline">
-                    {{ __('teacher.today.all_lessons') }} <x-icon name="chevron-right" class="flip-rtl size-4" />
-                </a>
-            </div>
-            @foreach ($upcoming as $lesson)
-                @include('livewire.teacher.partials.lesson-card', ['lesson' => $lesson, 'live' => false])
-            @endforeach
-        </section>
-    @endif
+    <div class="flex justify-end">
+        <a href="{{ route('teacher.lessons') }}" wire:navigate class="inline-flex items-center gap-1 text-sm font-bold text-terra-700 hover:underline">
+            {{ __('teacher.today.all_lessons') }} <x-icon name="chevron-right" class="flip-rtl size-4" />
+        </a>
+    </div>
+
+    {{-- Raccourcis --}}
+    <section class="animate-fade-up grid grid-cols-2 gap-3 [animation-delay:80ms]">
+        <a href="{{ route('teacher.groups', ['nouveau' => 1]) }}" wire:navigate class="card card-hover flex items-center gap-3 p-4">
+            <span class="flex size-11 items-center justify-center rounded-2xl bg-terra-50 text-terra-700"><x-icon name="plus" /></span>
+            <span class="text-sm font-bold text-olive-700">{{ __('teacher.groups.add') }}</span>
+        </a>
+        <a href="{{ route('teacher.students', ['nouveau' => 1]) }}" wire:navigate class="card card-hover flex items-center gap-3 p-4">
+            <span class="flex size-11 items-center justify-center rounded-2xl bg-honey-100 text-honey-700"><x-icon name="user" /></span>
+            <span class="text-sm font-bold text-olive-700">{{ __('teacher.students.add') }}</span>
+        </a>
+    </section>
 
     {{-- Mes tarifs --}}
     <section class="animate-fade-up card p-5 [animation-delay:260ms]" aria-labelledby="my-rates">

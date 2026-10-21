@@ -50,6 +50,7 @@ Il n'y a pas de compte élève ni parent.
   - compte de connexion, matières, statut actif / inactif (un enseignant inactif ne peut plus se connecter) ;
   - **deux tarifs par séance** : groupe collectif et cours individuel.
 - **Fiche enseignant** : chiffres du mois et historique complet des séances, filtrable et exportable en Excel.
+- **Élèves** : liste avec séances suivies, absences, taux de présence et statut de paiement (le plus urgent parmi leurs enseignants), recherche, filtres et export Excel. **Fiche élève** : statistiques, cycle de séances et statut chez chaque enseignant, historique des paiements et dernières présences.
 - **Salles** : nom, capacité, couleur dans le planning.
 - Composants communs : tableaux avec recherche, filtres, tri, pagination et export Excel ; formulaires en modale ; confirmations et notifications « toast ».
 
@@ -57,7 +58,7 @@ Il n'y a pas de compte élève ni parent.
 - **Menu latéral** (repliable sur ordinateur, tiroir sur mobile) : Tableau de bord, Séances, Programme, Groupes, Élèves.
 - **Séances** : liste à venir / passées / annulées, filtrable par groupe. **Programme** : semaine du dimanche au samedi.
 - **Notifications de paiement** dans la cloche (mises à jour à chaque page, pas en temps réel) : un élève atteint son cycle de séances ou passe en retard.
-- **Tableau de bord** : séances du jour (état en direct : à venir / en cours / terminée), prochains jours, chiffres du mois, tarifs, alerte des paiements à demander.
+- **Tableau de bord** : planning de la semaine mis en avant, séances du jour (état en direct : à venir / en cours / terminée), prochains jours, chiffres du mois, tarifs, alerte des paiements à demander.
 - **Groupes** :
   - création, modification, archivage ; choix des créneaux avec contrôle des conflits (salle, enseignant) ;
   - le groupe est attribué à l'enseignant qui le crée, qui peut le confier à un collègue de la même matière ;

@@ -32,7 +32,7 @@ return [
         'lessons' => 'حصصي اليوم',
         'no_lessons' => 'يوم حر!',
         'no_lessons_hint' => 'لا توجد أي حصة مبرمجة اليوم.',
-        'upcoming' => 'الأيام القادمة',
+        'planning' => 'برنامجي لهذا الأسبوع',
         'all_lessons' => 'كل الحصص',
         'live' => 'جارية الآن',
         'starts_in_prefix' => 'تبدأ بعد',

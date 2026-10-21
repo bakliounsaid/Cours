@@ -2,6 +2,7 @@
 
 namespace App\Repositories\Eloquent;
 
+use App\Enums\AttendanceStatus;
 use App\Models\Group;
 use App\Models\Student;
 use App\Models\Teacher;
@@ -70,6 +71,38 @@ class EloquentStudentRepository implements StudentRepository
     public function findActive(int $id): Student
     {
         return Student::query()->active()->findOrFail($id);
+    }
+
+    public function adminTableQuery(): Builder
+    {
+        return Student::query()
+            ->with(['level', 'groups' => fn ($query) => $query->where('is_active', true)->orderBy('name')])
+            ->withCount([
+                'attendances as attended_count' => fn (Builder $query) => $query
+                    ->whereIn('status', [AttendanceStatus::Present, AttendanceStatus::Late])
+                    ->whereHas('lesson', fn (Builder $lessons) => $lessons->notCancelled()),
+                'attendances as absent_count' => fn (Builder $query) => $query
+                    ->where('status', AttendanceStatus::Absent)
+                    ->whereHas('lesson', fn (Builder $lessons) => $lessons->notCancelled()),
+            ]);
+    }
+
+    public function findWithDetails(int|string $id): Student
+    {
+        return Student::query()
+            ->with([
+                'level',
+                'groups' => fn ($query) => $query->orderBy('name'),
+                'groups.subject',
+                'groups.teacher.user',
+                'individualTeachers.user',
+            ])
+            ->findOrFail($id);
+    }
+
+    public function activeCount(): int
+    {
+        return Student::query()->active()->count();
     }
 
     public function findInGroup(Group $group, int|string $id): Student

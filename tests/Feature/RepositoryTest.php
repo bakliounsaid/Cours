@@ -19,8 +19,9 @@ it('relie chaque contrat à son implémentation Eloquent', function (string $con
     [Contracts\TeacherRepository::class, Eloquent\EloquentTeacherRepository::class],
 ]);
 
-it('ne fait aucune requête directe dans l’espace enseignant', function () {
+it('ne fait aucune requête directe dans l’espace enseignant ni la section élèves de l’admin', function () {
     $files = collect(File::allFiles(app_path('Livewire/Teacher')))
+        ->merge(File::allFiles(app_path('Livewire/Admin/Students')))
         ->merge(array_map(fn (string $form) => new SplFileInfo(app_path("Livewire/Forms/{$form}.php")), ['GroupForm', 'StudentForm', 'IndividualLessonForm', 'PaymentForm']));
 
     foreach ($files as $file) {
