@@ -72,6 +72,10 @@ return [
             'max_files' => env('LOG_DAILY_DAYS', 14),
             'replace_placeholders' => true,
         ],
+        'sentry_logs' => [
+        'driver' => 'sentry_logs',
+        'level' => env('LOG_LEVEL', 'info'),
+    ],
 
         'monthly' => [
             'driver' => 'monthly',
